@@ -1,18 +1,16 @@
 package it.uniroma3.siw.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import it.uniroma3.siw.model.Credenziali;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CredenzialiService;
 import it.uniroma3.siw.service.UtenteService;
-import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
@@ -30,38 +28,50 @@ public class AuthController {
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("utente", new Utente());
-        model.addAttribute("credenziali", new Credenziali());
         return "register";
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("utente") Utente utente,
-                           @Valid @ModelAttribute("credenziali") Credenziali credenziali,
-                           BindingResult bindingResult,
+    public String register(@RequestParam String nome,
+                           @RequestParam String cognome,
+                           @RequestParam String email,
+                           @RequestParam String username,
+                           @RequestParam String password,
                            Model model) {
-        if (bindingResult.hasErrors()) {
-            return "register";
-        }
-
+        
         // Controlla se username esiste già
-        if (credenzialiService.getCredenziali(credenziali.getUsername()) != null) {
+        if (credenzialiService.getCredenziali(username) != null) {
             model.addAttribute("error", "Username già in uso");
             return "register";
         }
 
-        // Imposta il ruolo di default
+        // Crea l'utente
+        Utente utente = new Utente();
+        utente.setNome(nome);
+        utente.setCognome(cognome);
+        utente.setEmail(email);
+        
+        // Crea le credenziali
+        Credenziali credenziali = new Credenziali();
+        credenziali.setUsername(username);
         credenziali.setRuolo(Credenziali.DEFAULT_ROLE);
         
-        // Collega utente e credenziali
+        // 🔥 CODIFICA LA PASSWORD PRIMA DI SALVARE!
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String passwordCodificata = encoder.encode(password);
+        credenziali.setPassword(passwordCodificata);
+        
+        System.out.println("🔐 Password originale: " + password);
+        System.out.println("🔐 Password codificata: " + passwordCodificata);
+        
+        // Collega
         credenziali.setUtente(utente);
         utente.setCredenziali(credenziali);
         
-        // Salva
+        // Salva - usa saveCredenzialiRaw perché abbiamo già codificato
         utenteService.saveUtente(utente);
-        credenzialiService.saveCredenziali(credenziali);
+        credenzialiService.saveCredenzialiRaw(credenziali);
         
         return "registration-success";
     }
 }
-

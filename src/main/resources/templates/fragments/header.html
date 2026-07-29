@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+    <!-- HEADER -->
+    <div th:fragment="header">
+        <div class="header-container">
+            <div class="logo">
+                <a th:href="@{/}">
+                    <h1>IntimoStore</h1>
+                </a>
+            </div>
+            
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/categorie}">Categorie</a>
+                <a th:href="@{/prodotti}">Catalogo</a>
+                <a th:href="@{/carrello}">🛒 Carrello</a>
+                <a th:href="@{/ordini}">📦 Ordini</a>
+                
+                <!-- Link Admin (visibile solo se ADMIN) -->
+                <a th:href="@{/admin}" 
+                   th:if="${utenteCorrente != null && utenteCorrente.credenziali.ruolo == 'ADMIN'}"
+                   style="color: #e91e63; font-weight: bold;">
+                   ⚙️ Admin
+                </a>
+            </nav>
+            
+            <div class="auth-buttons">
+                <!-- Se l'utente è loggato -->
+                <div th:if="${utenteCorrente != null}" class="user-info">
+                    <span class="username" th:text="'👋 Ciao, ' + ${utenteCorrente.nome} + '!'"></span>
+                    <a th:href="@{/logout}" class="btn-logout">Logout</a>
+                </div>
+                
+                <!-- Se l'utente NON è loggato -->
+                <div th:unless="${utenteCorrente != null}" class="auth-links">
+                    <a th:href="@{/login}" class="btn-login">Accedi</a>
+                    <a th:href="@{/register}" class="btn-register">Registrati</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

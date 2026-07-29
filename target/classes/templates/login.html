@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login - Lunna</title>
+    <title>Login - IntimoStore</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <header>
-        <h1>Lunna</h1>
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/categorie}">Categorie</a>
-            <a th:href="@{/prodotti}">Catalogo</a>
-        </nav>
-    </header>
+    <!-- HEADER - SINTASSI CORRETTA -->
+    <div th:replace="fragments/header :: header"></div>
 
     <main>
         <div class="auth-container">
@@ -45,7 +39,7 @@
     </main>
 
     <footer>
-        <p>&copy; Progetto SIW</p>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
     </footer>
 </body>
 </html>

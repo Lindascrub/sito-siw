@@ -5,16 +5,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <header>
-        <h1>IntimoStore</h1>
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/categorie}">Categorie</a>
-            <a th:href="@{/prodotti}">Catalogo</a>
-            <a th:href="@{/carrello}">🛒 Carrello</a>
-            <a th:href="@{/ordini}">📦 Ordini</a>
-        </nav>
-    </header>
+    <header th:replace="~{fragments/header :: header}"></header>
 
     <main>
         <h2>I tuoi ordini</h2>
