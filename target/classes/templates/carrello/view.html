@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Carrello - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/categorie}">Categorie</a>
+            <a th:href="@{/prodotti}">Catalogo</a>
+            <a th:href="@{/carrello}">🛒 Carrello</a>
+            <a th:href="@{/ordini}">📦 Ordini</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Il tuo carrello</h2>
+        
+        <div th:if="${param.empty}" class="error-message">
+            Il carrello è vuoto!
+        </div>
+        
+        <div th:if="${carrello.righe.isEmpty()}" class="carrello-vuoto">
+            <p>Il tuo carrello è vuoto.</p>
+            <a th:href="@{/prodotti}" class="btn-primary">Continua lo shopping</a>
+        </div>
+        
+        <div th:unless="${carrello.righe.isEmpty()}">
+            <table class="carrello-table">
+                <thead>
+                    <tr>
+                        <th>Prodotto</th>
+                        <th>Prezzo</th>
+                        <th>Quantità</th>
+                        <th>Totale</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="riga : ${carrello.righe}">
+                        <td th:text="${riga.prodotto.nome}">Nome</td>
+                        <td th:text="'€ ' + ${riga.prodotto.prezzo}">€ 0.00</td>
+                        <td th:text="${riga.quantita}">1</td>
+                        <td th:text="'€ ' + ${riga.quantita * riga.prodotto.prezzo}">€ 0.00</td>
+                        <td>
+                            <a th:href="@{/carrello/rimuovi/} + ${riga.prodotto.id}" class="btn-delete">🗑️</a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><strong>Totale</strong></td>
+                        <td colspan="2"><strong th:text="'€ ' + ${carrello.totale}">€ 0.00</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="carrello-actions">
+                <form th:action="@{/carrello/checkout}" method="POST">
+                    <button type="submit" class="btn-primary">Procedi al pagamento</button>
+                </form>
+                <a th:href="@{/prodotti}" class="btn-secondary">Continua lo shopping</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>I miei ordini - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/categorie}">Categorie</a>
+            <a th:href="@{/prodotti}">Catalogo</a>
+            <a th:href="@{/carrello}">🛒 Carrello</a>
+            <a th:href="@{/ordini}">📦 Ordini</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>I tuoi ordini</h2>
+        
+        <div th:if="${param.success}" class="success-message">
+            Ordine creato con successo!
+        </div>
+        
+        <div th:if="${ordini.isEmpty()}" class="nessun-ordine">
+            <p>Non hai ancora effettuato ordini.</p>
+            <a th:href="@{/prodotti}" class="btn-primary">Vai al catalogo</a>
+        </div>
+        
+        <div th:unless="${ordini.isEmpty()}">
+            <table class="ordini-table">
+                <thead>
+                    <tr>
+                        <th>ID Ordine</th>
+                        <th>Data</th>
+                        <th>Totale</th>
+                        <th>Stato</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="o : ${ordini}">
+                        <td th:text="'#' + ${o.id}">#1</td>
+                        <td th:text="${#temporals.format(o.dataCreazione, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+                        <td th:text="'€ ' + ${o.totale}">€ 0.00</td>
+                        <td th:text="${o.stato}">CREATO</td>
+                        <td>
+                            <a th:href="@{/ordini/} + ${o.id}" class="btn-edit">👁️ Dettaglio</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>

@@ -28,6 +28,12 @@ public class OrdineService {
         return ordineRepository.findByUtenteOrderByDataCreazioneDesc(utente);
     }
     
+    @Transactional(readOnly = true)
+    public Ordine getOrdine(Long id) {  // ← AGGIUNTO!
+        return ordineRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Ordine non trovato con id: " + id));
+    }
+    
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Ordine creaOrdine(Utente utente, Carrello carrello) {
         // Verifica disponibilità prodotti
