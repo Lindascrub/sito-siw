@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Taglia - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore - Nuova Taglia</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/admin}">Dashboard</a>
+            <a th:href="@{/admin/taglie}">Taglie</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Nuova Taglia</h2>
+
+        <form th:action="@{/admin/taglie}" th:object="${taglia}" method="POST" class="admin-form">
+            <div class="form-group">
+                <label>Codice *</label>
+                <input type="text" th:field="*{codice}" required placeholder="ES: XS, S, M, L, XL"/>
+                <span class="error" th:if="${#fields.hasErrors('codice')}" th:errors="*{codice}"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Descrizione</label>
+                <input type="text" th:field="*{descrizione}" placeholder="Extra Small"/>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Salva</button>
+                <a th:href="@{/admin/taglie}" class="btn-secondary">Annulla</a>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>

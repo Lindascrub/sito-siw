@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Categorie - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore - Gestione Categorie</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/admin}">Dashboard</a>
+            <a th:href="@{/admin/prodotti}">Prodotti</a>
+            <a th:href="@{/admin/categorie}">Categorie</a>
+            <a th:href="@{/admin/taglie}">Taglie</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="admin-header">
+            <h2>Categorie</h2>
+            <a th:href="@{/admin/categorie/nuovo}" class="btn-primary">+ Nuova Categoria</a>
+        </div>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="c : ${categorie}">
+                    <td th:text="${c.id}">1</td>
+                    <td th:text="${c.nome}">Nome</td>
+                    <td>
+                        <a th:href="@{/admin/categorie/elimina/} + ${c.id}" 
+                           class="btn-delete"
+                           onclick="return confirm('Sei sicuro?')">🗑️</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>

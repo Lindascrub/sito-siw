@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Categorie</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <h1>Le nostre categorie</h1>
+    
+    <ul>
+        <li th:each="categoria : ${categorie}">
+            <span th:text="${categoria.nome}">Nome categoria</span>
+        </li>
+    </ul>
+    
+    <a th:href="@{/}">Torna alla home</a>
+</body>
+</html>

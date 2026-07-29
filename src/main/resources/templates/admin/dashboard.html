@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore - Area Amministrazione</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/admin}">Dashboard</a>
+            <a th:href="@{/admin/prodotti}">Prodotti</a>
+            <a th:href="@{/admin/categorie}">Categorie</a>
+            <a th:href="@{/admin/taglie}">Taglie</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Benvenuto nell'area amministrazione</h2>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h3 th:text="${totaleProdotti}">0</h3>
+                <p>Prodotti</p>
+                <a th:href="@{/admin/prodotti}">Gestisci →</a>
+            </div>
+            <div class="stat-card">
+                <h3 th:text="${totaleCategorie}">0</h3>
+                <p>Categorie</p>
+                <a th:href="@{/admin/categorie}">Gestisci →</a>
+            </div>
+            <div class="stat-card">
+                <h3 th:text="${totaleTaglie}">0</h3>
+                <p>Taglie</p>
+                <a th:href="@{/admin/taglie}">Gestisci →</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>

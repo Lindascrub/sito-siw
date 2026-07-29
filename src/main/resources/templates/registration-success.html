@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registrazione completata - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/categorie}">Categorie</a>
+            <a th:href="@{/prodotti}">Catalogo</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <h2>Registrazione completata!</h2>
+            <p>Il tuo account è stato creato con successo.</p>
+            <p>Ora puoi <a th:href="@{/login}">accedere</a>.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>

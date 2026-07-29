@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lunna</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>Lunna</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/categorie}">Categorie</a>
+            <a th:href="@{/prodotti}">Catalogo</a>
+            <a th:href="@{/admin}" style="color: #e91e63;">Admin</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Benvenuto su Lunna</h1>
+        <p>Il tuo negozio di intimo online</p>
+        
+        <div class="home-links">
+            <a th:href="@{/categorie}" class="home-card">
+                <h3>Categorie</h3>
+                <p>Esplora le nostre categorie</p>
+            </a>
+            <a th:href="@{/prodotti}" class="home-card">
+                <h3>Catalogo</h3>
+                <p>Scopri tutti i prodotti</p>
+            </a>
+            <a th:href="@{/admin}" class="home-card" style="border-color: #e91e63;">
+                <h3>Admin</h3>
+                <p>Gestisci il negozio</p>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Progetto SIW</p>
+    </footer>
+</body>
+</html>

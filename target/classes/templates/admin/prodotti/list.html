@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Prodotti - IntimoStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header>
+        <h1>IntimoStore - Gestione Prodotti</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/admin}">Dashboard</a>
+            <a th:href="@{/admin/prodotti}">Prodotti</a>
+            <a th:href="@{/admin/categorie}">Categorie</a>
+            <a th:href="@{/admin/taglie}">Taglie</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="admin-header">
+            <h2>Prodotti</h2>
+            <a th:href="@{/admin/prodotti/nuovo}" class="btn-primary">+ Nuovo Prodotto</a>
+        </div>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Prezzo</th>
+                    <th>Disponibili</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${prodotti}">
+                    <td th:text="${p.id}">1</td>
+                    <td th:text="${p.nome}">Nome</td>
+                    <td th:text="${p.categoria.nome}">Categoria</td>
+                    <td th:text="'€ ' + ${p.prezzo}">€ 0.00</td>
+                    <td th:text="${p.quantitaDisponibile}">0</td>
+                    <td>
+                        <a th:href="@{/admin/prodotti/modifica/} + ${p.id}" class="btn-edit">✏️</a>
+                        <a th:href="@{/admin/prodotti/elimina/} + ${p.id}" 
+                           class="btn-delete"
+                           onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?')">🗑️</a>
+                    </td>
+                </tr>
+                <tr th:if="${prodotti.isEmpty()}">
+                    <td colspan="6">Nessun prodotto presente</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
+    </footer>
+</body>
+</html>
