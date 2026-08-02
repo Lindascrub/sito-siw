@@ -1778,4 +1778,94 @@ footer {
 	        font-size: 10px;
 	    }
 	}
+	/* ===== CATALOGO HEADER ===== */
+	.catalogo-header {
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	    flex-wrap: wrap;
+	    gap: 16px;
+	    margin-bottom: 24px;
+	    padding-bottom: 12px;
+	    border-bottom: 1px solid var(--border);
+	}
+
+	.catalogo-header h2 {
+	    font-family: 'Playfair Display', serif;
+	    font-size: 20px;
+	    font-weight: 300;
+	    letter-spacing: 2px;
+	    margin: 0;
+	}
+
+	/* ===== BARRA DI RICERCA PICCOLA ===== */
+	.search-form {
+	    display: flex;
+	    align-items: center;
+	    border-bottom: 1px solid var(--border);
+	    padding: 2px 0;
+	    gap: 2px;
+	    max-width: 200px;
+	}
+
+	.search-form:focus-within {
+	    border-bottom-color: var(--gold);
+	}
+
+	.search-btn {
+	    background: none;
+	    border: none;
+	    padding: 4px 2px 4px 0;
+	    cursor: pointer;
+	    font-size: 13px;
+	    color: var(--gray-400);
+	}
+
+	.search-btn:hover {
+	    color: var(--gold);
+	}
+
+	.search-input {
+	    border: none;
+	    padding: 4px 4px 4px 2px;
+	    font-family: 'Times New Roman', serif;
+	    font-size: 12px;
+	    font-weight: 300;
+	    color: var(--text);
+	    background: transparent;
+	    width: 120px;
+	    outline: none;
+	}
+
+	.search-input::placeholder {
+	    color: var(--gray-400);
+	    font-size: 11px;
+	}
+
+	.search-clear {
+	    padding: 4px 2px;
+	    color: var(--gray-400);
+	    text-decoration: none;
+	    font-size: 11px;
+	}
+
+	.search-clear:hover {
+	    color: var(--gold);
+	}
+
+	/* ===== RESPONSIVE ===== */
+	@media (max-width: 768px) {
+	    .catalogo-header {
+	        flex-direction: column;
+	        align-items: stretch;
+	    }
+
+	    .search-form {
+	        max-width: 100%;
+	    }
+
+	    .search-input {
+	        width: 100%;
+	    }
+	}
 }

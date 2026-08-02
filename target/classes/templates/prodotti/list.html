@@ -10,7 +10,26 @@
 
     <!-- CONTENUTO -->
     <main>
-        <h2>I nostri prodotti</h2>
+        <div class="catalogo-header">
+            <h2>I nostri prodotti</h2>
+            
+            <!-- 🔍 BARRA DI RICERCA -->
+            <form th:action="@{/prodotti/ricerca}" method="GET" class="search-form">
+                <input type="text" 
+                       name="q" 
+                       placeholder="Cerca prodotto..." 
+                       th:value="${query}"
+                       class="search-input"/>
+                <button type="submit" class="search-btn">🔍</button>
+                <a th:href="@{/prodotti}" th:if="${query != null}" class="search-clear">✕</a>
+            </form>
+        </div>
+
+        <!-- Risultati -->
+        <p th:if="${query != null}" class="search-results">
+            Risultati per: "<span th:text="${query}"></span>"
+            <span th:text="'(' + ${prodotti.size()} + ' prodotti)'"></span>
+        </p>
 
         <div class="prodotti-grid">
             <div class="prodotto-card" th:each="p : ${prodotti}">
@@ -25,7 +44,10 @@
                 </div>
                 <a th:href="@{/prodotto/} + ${p.id}" class="btn-dettaglio">Vedi Dettaglio</a>
             </div>
-            <p th:if="${prodotti.isEmpty()}" class="nessun-prodotto">Nessun prodotto disponibile al momento.</p>
+            <p th:if="${prodotti.isEmpty()}" class="nessun-prodotto">
+                <span th:if="${query != null}">Nessun prodotto trovato per "<span th:text="${query}"></span>"</span>
+                <span th:unless="${query != null}">Nessun prodotto disponibile al momento.</span>
+            </p>
         </div>
     </main>
 

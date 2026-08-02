@@ -40,8 +40,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disabilita CSRF per test
             .authorizeHttpRequests(auth -> auth
-            		.requestMatchers("/", "/index", "/categorie", "/prodotti", "/prodotto/**", "/prodotti/categoria/**", "/css/**", "/images/**").permitAll()
-                .requestMatchers("/register", "/registration-success", "/login").permitAll()
+            	.requestMatchers("/", "/index", "/categorie", "/prodotti", "/prodotto/**", "/prodotti/categoria/**", "/prodotti/ricerca", "/css/**", "/images/**").permitAll()
+            	.requestMatchers("/register", "/registration-success", "/login").permitAll()
                 .requestMatchers("/admin/**").hasRole(Credenziali.ADMIN_ROLE)
                 .anyRequest().authenticated()
             )

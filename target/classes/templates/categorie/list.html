@@ -14,7 +14,21 @@
             <h1>Le nostre categorie</h1>
             <p class="categorie-sub">Esplora la collezione</p>
         </div>
-
+		<!-- HEADER CATALOGO -->
+		<div class="catalogo-header">
+		    <h2>I nostri prodotti</h2>
+		    
+		    <!-- 🔍 BARRA DI RICERCA PICCOLA -->
+		    <form th:action="@{/prodotti/ricerca}" method="GET" class="search-form">
+		        <button type="submit" class="search-btn">🔍</button>
+		        <input type="text" 
+		               name="q" 
+		               placeholder="Cerca..." 
+		               th:value="${query}"
+		               class="search-input"/>
+		        <a th:href="@{/prodotti}" th:if="${query != null}" class="search-clear">✕</a>
+		    </form>
+		</div>
         <!-- GRIGLIA CATEGORIE -->
         <div class="categorie-grid">
             <a th:each="cat : ${categorie}" 
