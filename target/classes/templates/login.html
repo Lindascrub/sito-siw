@@ -5,33 +5,47 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <!-- HEADER - SINTASSI CORRETTA -->
-    <div th:replace="fragments/header :: header"></div>
+    <!-- HEADER - DIRETTAMENTE NEL FILE -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a th:href="@{/}">
+                    <h1>IntimoStore</h1>
+                </a>
+            </div>
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/categorie}">Categorie</a>
+                <a th:href="@{/prodotti}">Catalogo</a>
+                <a th:href="@{/carrello}">🛒 Carrello</a>
+                <a th:href="@{/ordini}">📦 Ordini</a>
+            </nav>
+            <div class="auth-buttons">
+                <a th:href="@{/login}" class="btn-login">Accedi</a>
+                <a th:href="@{/register}" class="btn-register">Registrati</a>
+            </div>
+        </div>
+    </header>
 
     <main>
         <div class="auth-container">
             <h2>Accedi</h2>
-            
             <div th:if="${param.error}" class="error-message">
                 Username o password non validi
             </div>
-            
             <form th:action="@{/login}" method="POST" class="auth-form">
                 <div class="form-group">
                     <label>Username</label>
                     <input type="text" name="username" required/>
                 </div>
-                
                 <div class="form-group">
                     <label>Password</label>
                     <input type="password" name="password" required/>
                 </div>
-                
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">Accedi</button>
                 </div>
             </form>
-            
             <p class="auth-link">
                 Non hai un account? <a th:href="@{/register}">Registrati</a>
             </p>

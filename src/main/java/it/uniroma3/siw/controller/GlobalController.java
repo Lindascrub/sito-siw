@@ -14,6 +14,9 @@ public class GlobalController {
 
     @ModelAttribute("utenteCorrente")
     public Utente getUtenteCorrente() {
-        return authenticationHelper.getCurrentUser();
+        Utente utente = authenticationHelper.getCurrentUser();
+        System.out.println("🔍 Utente corrente: " + (utente != null ? utente.getNome() : "null"));
+        return utente;
     }
+    
 }
