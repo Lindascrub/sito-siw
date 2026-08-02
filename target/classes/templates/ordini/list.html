@@ -5,14 +5,14 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
+    <!-- HEADER IMPORTATO -->
     <header th:replace="~{fragments/header :: header}"></header>
 
+    <!-- CONTENUTO -->
     <main>
         <h2>I tuoi ordini</h2>
         
-        <div th:if="${param.success}" class="success-message">
-            Ordine creato con successo!
-        </div>
+        <div th:if="${param.success}" class="success-message">Ordine creato con successo!</div>
         
         <div th:if="${ordini.isEmpty()}" class="nessun-ordine">
             <p>Non hai ancora effettuato ordini.</p>

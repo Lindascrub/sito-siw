@@ -30,21 +30,19 @@ public class SecurityConfig {
             "SELECT username, password, true as enabled FROM credenziali WHERE username=?"
         );
         manager.setAuthoritiesByUsernameQuery(
-            "SELECT username, ruolo FROM credenziali WHERE username=?"
+            "SELECT username, 'ROLE_' || ruolo FROM credenziali WHERE username=?"
         );
-        
-        // 🔥 STAMPA PER DEBUG
-        System.out.println("🔍 UserDetailsService caricato con query: " + manager.getUsersByUsernameQuery());
-        
         return manager;
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable()) // Disabilita CSRF per test
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/index", "/categorie", "/prodotti", "/prodotto/**", "/css/**", "/images/**").permitAll()
-                .requestMatchers("/register", "/registration-success").permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/register", "/registration-success", "/login").permitAll()
+                .requestMatchers("/admin/**").hasRole(Credenziali.ADMIN_ROLE)
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -53,7 +51,11 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .clearAuthentication(true)
                 .permitAll()
             );
         

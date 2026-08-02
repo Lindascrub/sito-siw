@@ -5,44 +5,38 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <header>
-        <h1>IntimoStore</h1>
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/prodotti}">Catalogo</a>
-        </nav>
-    </header>
-    
+    <!-- HEADER IMPORTATO -->
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <!-- CONTENUTO -->
     <main>
         <div class="dettaglio-prodotto">
             <div class="immagine">
-                <img th:src="${prodotto.urlImmagine}" 
-                     th:alt="${prodotto.nome}"
-                     th:if="${prodotto.urlImmagine != null}"/>
-                <img src="/images/no-image.png" 
-                     th:unless="${prodotto.urlImmagine != null}" 
-                     alt="Immagine non disponibile"/>
+                <img th:src="${prodotto.urlImmagine}" th:alt="${prodotto.nome}" th:if="${prodotto.urlImmagine != null}"/>
+                <img src="/images/no-image.png" th:unless="${prodotto.urlImmagine != null}" alt="Immagine non disponibile"/>
             </div>
-            
             <div class="info">
                 <h2 th:text="${prodotto.nome}">Nome Prodotto</h2>
                 <p class="categoria" th:text="'Categoria: ' + ${prodotto.categoria.nome}">Categoria</p>
                 <p class="descrizione" th:text="${prodotto.descrizione}">Descrizione</p>
                 <p class="prezzo" th:text="'€ ' + ${prodotto.prezzo}">€ 0.00</p>
                 <p class="quantita" th:text="'Disponibili: ' + ${prodotto.quantitaDisponibile}">Disponibili: 0</p>
-                
                 <div class="taglie" th:if="${!prodotto.taglie.isEmpty()}">
                     <h4>Taglie disponibili:</h4>
-                    <span th:each="t : ${prodotto.taglie}" 
-                          th:text="${t.codice}" 
-                          class="taglia-badge"></span>
+                    <span th:each="t : ${prodotto.taglie}" th:text="${t.codice}" class="taglia-badge"></span>
                 </div>
-                
-                <a th:href="@{/}">Torna al catalogo</a>
+                <div class="aggiungi-carrello">
+                    <form th:action="@{/carrello/aggiungi/} + ${prodotto.id}" method="POST">
+                        <label>Quantità:</label>
+                        <input type="number" name="quantita" value="1" min="1" max="${prodotto.quantitaDisponibile}"/>
+                        <button type="submit" class="btn-primary">🛒 Aggiungi al carrello</button>
+                    </form>
+                </div>
+                <a th:href="@{/prodotti}" class="btn-secondary">Torna al catalogo</a>
             </div>
         </div>
     </main>
-    
+
     <footer>
         <p>&copy; 2026 IntimoStore - Progetto SIW</p>
     </footer>

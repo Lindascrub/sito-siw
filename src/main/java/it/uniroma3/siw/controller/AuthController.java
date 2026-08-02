@@ -4,7 +4,11 @@ import it.uniroma3.siw.model.Credenziali;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CredenzialiService;
 import it.uniroma3.siw.service.UtenteService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +34,13 @@ public class AuthController {
     public String register(Model model) {
         return "register";
     }
+    
+    @GetMapping("/logout-manuale")
+    public String logoutManuale(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
+        return "redirect:/";
+        }
 
     @PostMapping("/register")
     public String register(@RequestParam String nome,

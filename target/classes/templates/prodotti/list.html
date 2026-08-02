@@ -5,44 +5,30 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
+    <!-- HEADER IMPORTATO -->
     <header th:replace="~{fragments/header :: header}"></header>
-    
+
+    <!-- CONTENUTO -->
     <main>
         <h2>I nostri prodotti</h2>
-        
-        <!-- Filtri per categoria -->
-        <div class="filtri">
-            <h3>Categorie</h3>
-            <ul>
-                <li><a th:href="@{/prodotti}">Tutti</a></li>
-                <li th:each="cat : ${categorie}">
-                    <a th:href="@{/prodotti/categoria/} + ${cat.id}" 
-                       th:text="${cat.nome}">Categoria</a>
-                </li>
-            </ul>
-        </div>
-        
-        <!-- Griglia prodotti -->
+
         <div class="prodotti-grid">
             <div class="prodotto-card" th:each="p : ${prodotti}">
-                <img th:src="${p.urlImmagine}" 
-                     th:alt="${p.nome}" 
-                     th:if="${p.urlImmagine != null}"/>
-                <img src="/images/no-image.png" 
-                     th:unless="${p.urlImmagine != null}" 
-                     alt="Immagine non disponibile"/>
+                <img th:src="${p.urlImmagine}" th:alt="${p.nome}" th:if="${p.urlImmagine != null}"/>
+                <img src="/images/no-image.png" th:unless="${p.urlImmagine != null}" alt="Immagine non disponibile"/>
                 <h3 th:text="${p.nome}">Nome Prodotto</h3>
+                <p class="categoria" th:text="'Categoria: ' + ${p.categoria.nome}">Categoria</p>
                 <p class="prezzo" th:text="'€ ' + ${p.prezzo}">€ 0.00</p>
                 <p class="quantita" th:text="'Disponibili: ' + ${p.quantitaDisponibile}">Disponibili: 0</p>
+                <div th:if="${!p.taglie.isEmpty()}">
+                    <span class="taglia-badge" th:each="t : ${p.taglie}" th:text="${t.codice}"></span>
+                </div>
                 <a th:href="@{/prodotto/} + ${p.id}" class="btn-dettaglio">Vedi Dettaglio</a>
             </div>
-            
-            <p th:if="${prodotti.isEmpty()}" class="nessun-prodotto">
-                Nessun prodotto disponibile al momento.
-            </p>
+            <p th:if="${prodotti.isEmpty()}" class="nessun-prodotto">Nessun prodotto disponibile al momento.</p>
         </div>
     </main>
-    
+
     <footer>
         <p>&copy; 2026 IntimoStore - Progetto SIW</p>
     </footer>

@@ -5,14 +5,14 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
+    <!-- HEADER IMPORTATO -->
     <header th:replace="~{fragments/header :: header}"></header>
 
+    <!-- CONTENUTO -->
     <main>
         <h2>Il tuo carrello</h2>
         
-        <div th:if="${param.empty}" class="error-message">
-            Il carrello è vuoto!
-        </div>
+        <div th:if="${param.empty}" class="error-message">Il carrello è vuoto!</div>
         
         <div th:if="${carrello.righe.isEmpty()}" class="carrello-vuoto">
             <p>Il tuo carrello è vuoto.</p>
@@ -48,7 +48,6 @@
                     </tr>
                 </tfoot>
             </table>
-            
             <div class="carrello-actions">
                 <form th:action="@{/carrello/checkout}" method="POST">
                     <button type="submit" class="btn-primary">Procedi al pagamento</button>

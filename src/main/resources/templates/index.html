@@ -1,38 +1,38 @@
-<header>
-    <div class="header-container">
-        <div class="logo">
-            <a th:href="@{/}">
-                <h1>IntimoStore</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lunna</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header}"></header>
+
+  <main class="home-centrato">
+        <section class="hero-centrato">
+            <h1>Benvenuto su Lunna</h1>
+            <a th:href="@{/login}" class="btn-hero">Registrati per rimanere aggiornato</a>
+        </section>
+        
+        <div class="home-links">
+            <a th:href="@{/categorie}" class="home-card-centrato">
+                <h3>Categorie</h3>
+                <p>Esplora le nostre categorie</p>
+            </a>
+            <a th:href="@{/prodotti}" class="home-card-centrato">
+                <h3>Catalogo</h3>
+                <p>Scopri tutti i prodotti</p>
+            </a>
+            <a th:href="@{/carrello}" class="home-card-centrato">
+                <h3>Carrello</h3>
+                <p>Vedi il tuo carrello</p>
+            </a>
+            <a th:href="@{/ordini}" class="home-card-centrato" th:if="${utenteCorrente != null}">
+                <h3 Ordini</h3>
+                <p>I tuoi ordini</p>
             </a>
         </div>
-        
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/categorie}">Categorie</a>
-            <a th:href="@{/prodotti}">Catalogo</a>
-            <a th:href="@{/carrello}">🛒 Carrello</a>
-            <a th:href="@{/ordini}">📦 Ordini</a>
-            
-            <!-- Link Admin (visibile solo se ADMIN) -->
-            <a th:href="@{/admin}" 
-               th:if="${utenteCorrente != null && utenteCorrente.credenziali.ruolo == 'ADMIN'}"
-               style="color: #e91e63; font-weight: bold;">
-               ⚙️ Admin
-            </a>
-        </nav>
-        
-        <div class="auth-buttons">
-            <!-- Se l'utente è loggato -->
-            <div th:if="${utenteCorrente != null}" class="user-info">
-                <span class="username" th:text="'👋 Ciao, ' + ${utenteCorrente.nome} + '!'"></span>
-                <a th:href="@{/logout}" class="btn-logout">Logout</a>
-            </div>
-            
-            <!-- Se l'utente NON è loggato -->
-            <div th:unless="${utenteCorrente != null}" class="auth-links">
-                <a th:href="@{/login}" class="btn-login">Accedi</a>
-                <a th:href="@{/register}" class="btn-register">Registrati</a>
-            </div>
-        </div>
-    </div>
-</header>
+    </main>
+
+
+</body>
+</html>

@@ -1,19 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Registrazione completata - IntimoStore</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <header>
-        <h1>IntimoStore</h1>
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/categorie}">Categorie</a>
-            <a th:href="@{/prodotti}">Catalogo</a>
-        </nav>
-    </header>
+    <!-- HEADER IMPORTATO -->
+    <header th:replace="~{fragments/header :: header}"></header>
 
+    <!-- CONTENUTO -->
     <main>
         <div class="auth-container">
             <h2>Registrazione completata!</h2>

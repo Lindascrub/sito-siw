@@ -12,7 +12,7 @@ INSERT INTO taglia (id, codice, descrizione) VALUES (nextval('taglia_seq'), 'L',
 INSERT INTO taglia (id, codice, descrizione) VALUES (nextval('taglia_seq'), 'XL', 'Extra Large');
 
 -- PRODOTTI (usando SELECT per trovare l'ID della categoria)
-INSERT INTO prodotto (id, nome, descrizione, prezzo, quantita_disponibile, url_immagine, categoria_id) VALUES (nextval('prodotto_seq'), 'Reggiseno in pizzo nero', 'Reggiseno in pizzo con ferretto, coppa imbottita', 29.99, 50, '/images/reggiseno-nero.jpg', (SELECT id FROM categoria WHERE nome = 'Reggiseni'));
+INSERT INTO prodotto (id, nome, descrizione, prezzo, quantita_disponibile, url_immagine, categoria_id) VALUES (nextval('prodotto_seq'), 'Reggiseno Triangolo Fanciful Flowers', 'Reggiseno', 35.90, 50, '/images/triangolofiore.jpg', (SELECT id FROM categoria WHERE nome = 'Reggiseni'));
 INSERT INTO prodotto (id, nome, descrizione, prezzo, quantita_disponibile, url_immagine, categoria_id) VALUES (nextval('prodotto_seq'), 'Guaina modellante nera', 'Guaina modellante in microfibra', 39.99, 30, '/images/guaina-nera.jpg', (SELECT id FROM categoria WHERE nome = 'Guaine modellanti'));
 INSERT INTO prodotto (id, nome, descrizione, prezzo, quantita_disponibile, url_immagine, categoria_id) VALUES (nextval('prodotto_seq'), 'Bodysuit in pizzo bianco', 'Bodysuit elegante in pizzo', 34.99, 25, '/images/bodysuit-bianco.jpg', (SELECT id FROM categoria WHERE nome = 'Bodysuits'));
 INSERT INTO prodotto (id, nome, descrizione, prezzo, quantita_disponibile, url_immagine, categoria_id) VALUES (nextval('prodotto_seq'), 'Set lingerie in seta', 'Set completo in seta naturale', 59.99, 15, '/images/lingerie-seta.jpg', (SELECT id FROM categoria WHERE nome = 'Lingerie'));
