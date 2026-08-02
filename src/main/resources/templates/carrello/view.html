@@ -7,7 +7,10 @@
 <body>
     <!-- HEADER IMPORTATO -->
     <header th:replace="~{fragments/header :: header}"></header>
-
+    
+    <!-- MESSAGGI FLASH -->
+    <div th:replace="~{fragments/messages :: messages}"></div>
+    
     <!-- CONTENUTO -->
     <main>
         <h2>Il tuo carrello</h2>
@@ -34,7 +37,16 @@
                     <tr th:each="riga : ${carrello.righe}">
                         <td th:text="${riga.prodotto.nome}">Nome</td>
                         <td th:text="'€ ' + ${riga.prodotto.prezzo}">€ 0.00</td>
-                        <td th:text="${riga.quantita}">1</td>
+                        <td>
+                            <!-- FORM PER MODIFICARE LA QUANTITÀ (DENTRO LA CELLA) -->
+                            <form th:action="@{/carrello/aggiorna/} + ${riga.prodotto.id}" method="POST" class="quantita-form">
+                                <input type="number" name="quantita" 
+                                       th:value="${riga.quantita}" 
+                                       min="1" 
+                                       onchange="this.form.submit()"
+                                       class="quantita-input"/>
+                            </form>
+                        </td>
                         <td th:text="'€ ' + ${riga.quantita * riga.prodotto.prezzo}">€ 0.00</td>
                         <td>
                             <a th:href="@{/carrello/rimuovi/} + ${riga.prodotto.id}" class="btn-delete">🗑️</a>

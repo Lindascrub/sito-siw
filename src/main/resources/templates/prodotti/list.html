@@ -49,6 +49,38 @@
                 <span th:unless="${query != null}">Nessun prodotto disponibile al momento.</span>
             </p>
         </div>
+		<!-- Dopo la griglia prodotti, aggiungi la paginazione -->
+		<div class="pagination-container" th:if="${totalPages > 1}">
+		    <div class="pagination">
+		        <!-- Pagina precedente -->
+		        <a th:if="${currentPage > 0}" 
+		           th:href="@{/prodotti(page=${currentPage - 1}, size=8)}" 
+		           class="page-link prev">←</a>
+		        <span th:unless="${currentPage > 0}" class="page-link prev disabled">←</span>
+		        
+		        <!-- Numeri pagine -->
+		        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+		            <a th:if="${i != currentPage}" 
+		               th:href="@{/prodotti(page=${i}, size=8)}" 
+		               th:text="${i + 1}" 
+		               class="page-link"></a>
+		            <span th:if="${i == currentPage}" 
+		                  th:text="${i + 1}" 
+		                  class="page-link active"></span>
+		        </span>
+		        
+		        <!-- Pagina successiva -->
+		        <a th:if="${currentPage < totalPages - 1}" 
+		           th:href="@{/prodotti(page=${currentPage + 1}, size=8)}" 
+		           class="page-link next">→</a>
+		        <span th:unless="${currentPage < totalPages - 1}" class="page-link next disabled">→</span>
+		    </div>
+		    
+		    <div class="pagination-info">
+		        Pagina <span th:text="${currentPage + 1}"></span> di <span th:text="${totalPages}"></span>
+		        (<span th:text="${prodottiPage.totalElements}"></span> prodotti totali)
+		    </div>
+		</div>
     </main>
 
     <footer>

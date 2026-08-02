@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+    <!-- MESSAGGI FLASH -->
+    <div th:fragment="messages">
+        <!-- Messaggio di SUCCESSO -->
+        <div th:if="${successo}" class="flash-message flash-success">
+            <span class="flash-icon">✅</span>
+            <span th:text="${successo}">Successo!</span>
+            <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+        </div>
+        
+        <!-- Messaggio di ERRORE -->
+        <div th:if="${errore}" class="flash-message flash-error">
+            <span class="flash-icon">❌</span>
+            <span th:text="${errore}">Errore!</span>
+            <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+        </div>
+        
+        <!-- Messaggio di AVVISO -->
+        <div th:if="${avviso}" class="flash-message flash-warning">
+            <span class="flash-icon">⚠️</span>
+            <span th:text="${avviso}">Avviso!</span>
+            <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+        </div>
+    </div>
+</body>
+</html>

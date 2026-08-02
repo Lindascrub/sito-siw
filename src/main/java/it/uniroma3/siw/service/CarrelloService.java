@@ -64,4 +64,21 @@ public class CarrelloService {
         carrello.getRighe().clear();
         return carrelloRepository.save(carrello);
     }
+    @Transactional
+    public Carrello aggiornaQuantita(Utente utente, Long prodottoId, int quantita) {
+        Carrello carrello = getCarrello(utente);
+        
+        for (RigaCarrello riga : carrello.getRighe()) {
+            if (riga.getProdotto().getId().equals(prodottoId)) {
+                if (quantita <= 0) {
+                    carrello.getRighe().remove(riga);
+                } else {
+                    riga.setQuantita(quantita);
+                }
+                break;
+            }
+        }
+        
+        return carrelloRepository.save(carrello);
+    }
 }

@@ -5,8 +5,6 @@ import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CredenzialiService;
 import it.uniroma3.siw.service.UtenteService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;  // ← AGGIUNGI QUESTO IMPORT!
 
 @Controller
 public class AuthController {
@@ -40,7 +39,7 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
         return "redirect:/";
-        }
+    }
 
     @PostMapping("/register")
     public String register(@RequestParam String nome,
@@ -48,12 +47,13 @@ public class AuthController {
                            @RequestParam String email,
                            @RequestParam String username,
                            @RequestParam String password,
-                           Model model) {
+                           Model model,
+                           RedirectAttributes redirectAttributes) {  // ← AGGIUNGI QUESTO PARAMETRO!
         
         // Controlla se username esiste già
         if (credenzialiService.getCredenziali(username) != null) {
-            model.addAttribute("error", "Username già in uso");
-            return "register";
+            redirectAttributes.addFlashAttribute("errore", "❌ Username già in uso!");
+            return "redirect:/register";  // ← USO redirect invece di return "register"
         }
 
         // Crea l'utente
@@ -79,10 +79,11 @@ public class AuthController {
         credenziali.setUtente(utente);
         utente.setCredenziali(credenziali);
         
-        // Salva - usa saveCredenzialiRaw perché abbiamo già codificato
+        // Salva
         utenteService.saveUtente(utente);
         credenzialiService.saveCredenzialiRaw(credenziali);
         
-        return "registration-success";
+        redirectAttributes.addFlashAttribute("successo", "✅ Registrazione completata! Ora puoi accedere.");
+        return "redirect:/login";
     }
 }
