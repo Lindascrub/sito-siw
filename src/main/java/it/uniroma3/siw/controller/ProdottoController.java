@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -51,10 +52,30 @@ public class ProdottoController {
         Prodotto prodotto = prodottoRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Prodotto non trovato"));
         
-        // Aggiungi una lista vuota per evitare errori
+        // Recupera le recensioni del prodotto
+        List<Recensione> recensioni = recensioneService.getRecensioniByProdotto(id);
+        
         model.addAttribute("prodotto", prodotto);
-        model.addAttribute("recensioni", java.util.Collections.emptyList());  // ← AGGIUNGI QUESTA RIGA!
+        model.addAttribute("recensioni", recensioni != null ? recensioni : Collections.emptyList());
         
         return "prodotti/dettaglio";
+    }
+    
+    @GetMapping("/prodotti/categoria/{categoriaId}")
+    public String prodottiPerCategoria(@PathVariable Long categoriaId,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "8") int size,
+                                       Model model) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Page<Prodotto> prodottiPage = prodottoRepository.findByCategoriaId(categoriaId, pageable);
+        
+        model.addAttribute("prodotti", prodottiPage.getContent());
+        model.addAttribute("prodottiPage", prodottiPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", prodottiPage.getTotalPages());
+        model.addAttribute("categorie", categoriaRepository.findAll());
+        model.addAttribute("categoriaSelezionata", categoriaId);
+        
+        return "prodotti/list";
     }
 }

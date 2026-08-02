@@ -5,9 +5,13 @@ import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CredenzialiService;
 import it.uniroma3.siw.service.UtenteService;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,5 +89,40 @@ public class AuthController {
         
         redirectAttributes.addFlashAttribute("successo", "✅ Registrazione completata! Ora puoi accedere.");
         return "redirect:/login";
+    }
+    @GetMapping("/oauth2/success")
+    public String oauth2Success(OAuth2AuthenticationToken authentication, RedirectAttributes redirectAttributes) {
+        // Prendi i dati dall'utente Google
+        Map<String, Object> attributes = authentication.getPrincipal().getAttributes();
+        String email = (String) attributes.get("email");
+        String nome = (String) attributes.get("given_name");
+        String cognome = (String) attributes.get("family_name");
+        
+        // Controlla se l'utente esiste già nel database
+        Credenziali credenziali = credenzialiService.getCredenziali(email);
+        
+        if (credenziali == null) {
+            // Crea un nuovo utente
+            Utente utente = new Utente();
+            utente.setNome(nome != null ? nome : "Google");
+            utente.setCognome(cognome != null ? cognome : "User");
+            utente.setEmail(email);
+            
+            Credenziali newCredenziali = new Credenziali();
+            newCredenziali.setUsername(email);
+            newCredenziali.setPassword(""); // Password vuota per OAuth
+            newCredenziali.setRuolo(Credenziali.DEFAULT_ROLE);
+            newCredenziali.setUtente(utente);
+            utente.setCredenziali(newCredenziali);
+            
+            utenteService.saveUtente(utente);
+            credenzialiService.saveCredenzialiRaw(newCredenziali);
+            
+            redirectAttributes.addFlashAttribute("successo", "✅ Benvenuto " + nome + "! Login con Google effettuato!");
+        } else {
+            redirectAttributes.addFlashAttribute("successo", "👋 Bentornato " + nome + "!");
+        }
+        
+        return "redirect:/";
     }
 }

@@ -26,7 +26,6 @@ public class UtenteService {
         }
         return null;
     }
-    
     public Utente getUtente(Long id) {
         return utenteRepository.findById(id).orElse(null);
     }
