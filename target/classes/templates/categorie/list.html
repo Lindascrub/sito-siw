@@ -1,18 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Categorie</title>
+    <title>Categorie - IntimoStore</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <h1>Le nostre categorie</h1>
-    
-    <ul>
-        <li th:each="categoria : ${categorie}">
-            <span th:text="${categoria.nome}">Nome categoria</span>
-        </li>
-    </ul>
-    
-    <a th:href="@{/}">Torna alla home</a>
+    <!-- HEADER -->
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <!-- CONTENUTO PRINCIPALE -->
+    <main class="categorie-page">
+        <div class="categorie-header">
+            <h1>Le nostre categorie</h1>
+            <p class="categorie-sub">Esplora la collezione</p>
+        </div>
+
+        <!-- GRIGLIA CATEGORIE -->
+        <div class="categorie-grid">
+            <a th:each="cat : ${categorie}" 
+               th:href="@{/prodotti/categoria/} + ${cat.id}" 
+               class="categoria-card">
+                <div class="categoria-icon">
+                    <!-- Icona diversa per ogni categoria (opzionale) -->
+                    <span th:if="${cat.nome == 'Reggiseni'}">👙</span>
+                    <span th:if="${cat.nome == 'Guaine modellanti'}">🧘</span>
+                    <span th:if="${cat.nome == 'Bodysuits'}">👗</span>
+                    <span th:if="${cat.nome == 'Lingerie'}">🌙</span>
+                    <span th:unless="${cat.nome == 'Reggiseni' or cat.nome == 'Guaine modellanti' or cat.nome == 'Bodysuits' or cat.nome == 'Lingerie'}">✦</span>
+                </div>
+                <h3 th:text="${cat.nome}">Categoria</h3>
+                <p class="categoria-count" th:text="'Scopri la collezione →'">Scopri</p>
+            </a>
+        </div>
+
+        <!-- BOTTONE TORNA ALLA HOME (minimal) -->
+        <div class="categorie-back">
+            <a th:href="@{/}" class="btn-back">← Torna alla home</a>
+        </div>
+    </main>
+
 </body>
 </html>
