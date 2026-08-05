@@ -2,83 +2,71 @@ package it.uniroma3.siw.service;
 
 import it.uniroma3.siw.model.Carrello;
 import it.uniroma3.siw.model.Prodotto;
-import it.uniroma3.siw.model.RigaCarrello;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.repository.CarrelloRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
+@Transactional
 public class CarrelloService {
     
-    @Autowired
-    private CarrelloRepository carrelloRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CarrelloService.class);
+    private final CarrelloRepository carrelloRepository;
+    private final ProdottoService prodottoService;
+    private final UtenteService utenteService;
     
-    @Autowired
-    private ProdottoService prodottoService;
+    public CarrelloService(CarrelloRepository carrelloRepository,
+                           ProdottoService prodottoService,
+                           UtenteService utenteService) {
+        this.carrelloRepository = carrelloRepository;
+        this.prodottoService = prodottoService;
+        this.utenteService = utenteService;
+    }
+    
+    @Transactional(readOnly = true)
+    public Carrello trovaPerUtente(Long utenteId) {
+        Utente utente = utenteService.findById(utenteId);
+        return carrelloRepository.findByUtente(utente)
+            .orElseGet(() -> {
+                Carrello nuovo = new Carrello(utente);
+                return carrelloRepository.save(nuovo);
+            });
+    }
     
     @Transactional
-    public Carrello getCarrello(Utente utente) {
-        Optional<Carrello> carrelloOpt = carrelloRepository.findByUtente(utente);
-        if (carrelloOpt.isPresent()) {
-            return carrelloOpt.get();
+    public Carrello aggiungiProdotto(Long utenteId, Long prodottoId, Integer quantita) {
+        Utente utente = utenteService.findById(utenteId);
+        Carrello carrello = trovaPerUtente(utenteId);
+        Prodotto prodotto = prodottoService.findById(prodottoId);
+        
+        if (prodotto.getQuantitaDisponibile() < quantita) {
+            throw new RuntimeException("Stock insufficiente per: " + prodotto.getNome());
         }
         
-        Carrello nuovoCarrello = new Carrello();
-        nuovoCarrello.setUtente(utente);
-        return carrelloRepository.save(nuovoCarrello);
-    }
-    
-    @Transactional
-    public Carrello aggiungiProdotto(Utente utente, Long prodottoId, int quantita) {
-        Carrello carrello = getCarrello(utente);
-        Prodotto prodotto = prodottoService.getProdotto(prodottoId);
-        
-        // Cerca se il prodotto è già nel carrello
-        Optional<RigaCarrello> rigaEsistente = carrello.getRighe().stream()
-            .filter(r -> r.getProdotto().getId().equals(prodottoId))
-            .findFirst();
-        
-        if (rigaEsistente.isPresent()) {
-            rigaEsistente.get().setQuantita(rigaEsistente.get().getQuantita() + quantita);
-        } else {
-            carrello.getRighe().add(new RigaCarrello(prodotto, quantita));
-        }
-        
+        carrello.aggiungiProdotto(prodotto, quantita);
+        logger.info("Aggiunto prodotto {} al carrello", prodotto.getNome());
         return carrelloRepository.save(carrello);
     }
     
     @Transactional
-    public Carrello rimuoviProdotto(Utente utente, Long prodottoId) {
-        Carrello carrello = getCarrello(utente);
-        carrello.getRighe().removeIf(r -> r.getProdotto().getId().equals(prodottoId));
+    public Carrello rimuoviProdotto(Long utenteId, Long prodottoId) {
+        Utente utente = utenteService.findById(utenteId);
+        Carrello carrello = trovaPerUtente(utenteId);
+        Prodotto prodotto = prodottoService.findById(prodottoId);
+        
+        carrello.rimuoviProdotto(prodotto);
+        logger.info("Rimosso prodotto {} dal carrello", prodotto.getNome());
         return carrelloRepository.save(carrello);
     }
     
     @Transactional
-    public Carrello svuotaCarrello(Utente utente) {
-        Carrello carrello = getCarrello(utente);
-        carrello.getRighe().clear();
-        return carrelloRepository.save(carrello);
-    }
-    @Transactional
-    public Carrello aggiornaQuantita(Utente utente, Long prodottoId, int quantita) {
-        Carrello carrello = getCarrello(utente);
-        
-        for (RigaCarrello riga : carrello.getRighe()) {
-            if (riga.getProdotto().getId().equals(prodottoId)) {
-                if (quantita <= 0) {
-                    carrello.getRighe().remove(riga);
-                } else {
-                    riga.setQuantita(quantita);
-                }
-                break;
-            }
-        }
-        
-        return carrelloRepository.save(carrello);
+    public void svuotaCarrello(Long utenteId) {
+        Carrello carrello = trovaPerUtente(utenteId);
+        carrello.svuota();
+        carrelloRepository.save(carrello);
+        logger.info("Carrello svuotato per utente: {}", utenteId);
     }
 }

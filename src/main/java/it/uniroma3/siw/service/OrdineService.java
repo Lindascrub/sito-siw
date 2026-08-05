@@ -1,82 +1,81 @@
 package it.uniroma3.siw.service;
 
-import it.uniroma3.siw.model.*;
+import it.uniroma3.siw.dto.ArticoloCarrelloDTO;
+import it.uniroma3.siw.model.Ordine;
+import it.uniroma3.siw.model.Prodotto;
+import it.uniroma3.siw.model.RigaOrdine;
+import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.repository.OrdineRepository;
-import it.uniroma3.siw.repository.ProdottoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class OrdineService {
     
-    @Autowired
-    private OrdineRepository ordineRepository;
+    private static final Logger logger = LoggerFactory.getLogger(OrdineService.class);
+    private final OrdineRepository ordineRepository;
+    private final ProdottoService prodottoService;
+    private final UtenteService utenteService;
     
-    @Autowired
-    private ProdottoRepository prodottoRepository;
-    
-    @Autowired
-    private CarrelloService carrelloService;
-    
-    @Transactional(readOnly = true)
-    public List<Ordine> getOrdiniUtente(Utente utente) {
-        return ordineRepository.findByUtenteOrderByDataCreazioneDesc(utente);
+    public OrdineService(OrdineRepository ordineRepository,
+                         ProdottoService prodottoService,
+                         UtenteService utenteService) {
+        this.ordineRepository = ordineRepository;
+        this.prodottoService = prodottoService;
+        this.utenteService = utenteService;
     }
     
-    @Transactional(readOnly = true)
-    public Ordine getOrdine(Long id) {  // ← AGGIUNTO!
-        return ordineRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Ordine non trovato con id: " + id));
-    }
-    
+    // ✅ Usa ArticoloCarrelloDTO invece di ArticoloCarrello
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Ordine creaOrdine(Utente utente, Carrello carrello) {
-        // Verifica disponibilità prodotti
-        for (RigaCarrello rigaCarrello : carrello.getRighe()) {
-            Prodotto prodotto = rigaCarrello.getProdotto();
-            if (prodotto.getQuantitaDisponibile() < rigaCarrello.getQuantita()) {
-                throw new RuntimeException("Prodotto non disponibile: " + prodotto.getNome());
+    public Ordine creaOrdine(Long utenteId, List<ArticoloCarrelloDTO> articoli,
+                             String indirizzo, String citta, String cap) {
+        
+        logger.info("Creazione ordine per utente: {}", utenteId);
+        
+        Utente utente = utenteService.findById(utenteId);
+        Ordine ordine = new Ordine(utente);
+        ordine.setIndirizzoSpedizione(indirizzo);
+        ordine.setCittaSpedizione(citta);
+        ordine.setCodPostaleSpedizione(cap);
+        
+        for (ArticoloCarrelloDTO articolo : articoli) {
+            Prodotto prodotto = prodottoService.findById(articolo.getProdottoId());
+            
+            // Verifica stock
+            if (prodotto.getQuantitaDisponibile() < articolo.getQuantita()) {
+                throw new RuntimeException(
+                    "Stock insufficiente per: " + prodotto.getNome() +
+                    ". Disponibili: " + prodotto.getQuantitaDisponibile()
+                );
             }
-        }
-        
-        // Crea l'ordine
-        Ordine ordine = new Ordine();
-        ordine.setUtente(utente);
-        ordine.setDataCreazione(LocalDateTime.now());
-        ordine.setStato(StatoOrdine.CREATO);
-        
-        double totale = 0;
-        
-        // Crea le righe ordine e aggiorna la disponibilità
-        for (RigaCarrello rigaCarrello : carrello.getRighe()) {
-            Prodotto prodotto = rigaCarrello.getProdotto();
             
-            // Aggiorna disponibilità
-            prodotto.setQuantitaDisponibile(prodotto.getQuantitaDisponibile() - rigaCarrello.getQuantita());
-            prodottoRepository.save(prodotto);
+            RigaOrdine riga = new RigaOrdine();
+            riga.setProdotto(prodotto);
+            riga.setQuantita(articolo.getQuantita());
+            riga.setPrezzoUnitario(prodotto.getPrezzo());
+            riga.setTaglia(articolo.getTaglia());
+            riga.setColore(articolo.getColore());
+            riga.setOrdine(ordine);
             
-            // Crea riga ordine
-            RigaOrdine rigaOrdine = new RigaOrdine(
-                prodotto,
-                rigaCarrello.getQuantita(),
-                prodotto.getPrezzo()
+            ordine.getRighe().add(riga);
+            
+            // Aggiorna stock
+            prodotto.setQuantitaDisponibile(
+                prodotto.getQuantitaDisponibile() - articolo.getQuantita()
             );
-            rigaOrdine.setOrdine(ordine);
-            ordine.getRighe().add(rigaOrdine);
-            
-            totale += rigaCarrello.getQuantita() * prodotto.getPrezzo();
+            prodottoService.salvaProdotto(prodotto);
         }
         
-        ordine.setTotale(totale);
+        ordine.calcolaTotale();
+        Ordine saved = ordineRepository.save(ordine);
+        logger.info("Ordine creato con id: {}", saved.getId());
         
-        // Svuota il carrello
-        carrelloService.svuotaCarrello(utente);
-        
-        return ordineRepository.save(ordine);
+        return saved;
     }
 }

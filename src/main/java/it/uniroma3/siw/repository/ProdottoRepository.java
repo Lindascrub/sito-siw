@@ -1,23 +1,38 @@
 package it.uniroma3.siw.repository;
 
-import it.uniroma3.siw.model.Ordine;
-import it.uniroma3.siw.model.StatoOrdine;
-import it.uniroma3.siw.model.Utente;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import java.time.LocalDateTime;
-import java.util.List;
 
-public interface OrdineRepository extends JpaRepository<Ordine, Long> {
+import it.uniroma3.siw.model.Prodotto;
+
+public interface ProdottoRepository extends JpaRepository<Prodotto, Long> {
     
-    List<Ordine> findByUtenteOrderByDataOrdineDesc(Utente utente);
+    List<Prodotto> findByAttivoTrue();
     
-    List<Ordine> findByStato(StatoOrdine stato);
+    List<Prodotto> findByCategoriaIdAndAttivoTrue(Long categoriaId);
     
-    List<Ordine> findByDataOrdineBetween(LocalDateTime inizio, LocalDateTime fine);
+    List<Prodotto> findByNomeContainingIgnoreCaseAndAttivoTrue(String nome);
     
-    @Query("SELECT o FROM Ordine o WHERE o.stato = :stato AND o.dataOrdine < :data")
-    List<Ordine> findOldOrdersByState(@Param("stato") StatoOrdine stato, 
-                                      @Param("data") LocalDateTime data);
+    List<Prodotto> findByPrezzoBetweenAndAttivoTrue(Double min, Double max);
+    
+    List<Prodotto> findByQuantitaDisponibileGreaterThanAndAttivoTrue(Integer quantita);
+    
+    // Query custom con JPQL
+    @Query("SELECT p FROM Prodotto p WHERE p.quantitaDisponibile > 0 AND p.attivo = true")
+    List<Prodotto> findProdottiDisponibili();
+    
+    @Query("SELECT p FROM Prodotto p WHERE " +
+           "(:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
+           "(:categoriaId IS NULL OR p.categoria.id = :categoriaId) AND " +
+           "p.attivo = true")
+    List<Prodotto> searchProdotti(@Param("nome") String nome, 
+                                  @Param("categoriaId") Long categoriaId);
+    
+    // Controlli di esistenza
+    boolean existsByCodiceModello(String codiceModello);
+    
+    boolean existsByNomeAndAttivoTrue(String nome);
 }

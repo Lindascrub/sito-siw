@@ -1,94 +1,105 @@
 package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Carrello;
+import it.uniroma3.siw.model.Prodotto;
 import it.uniroma3.siw.model.Utente;
-import it.uniroma3.siw.security.AuthenticationHelper;
 import it.uniroma3.siw.service.CarrelloService;
-import it.uniroma3.siw.service.OrdineService;
-import org.springframework.beans.factory.annotation.Autowired;
+import it.uniroma3.siw.service.ProdottoService;
+import it.uniroma3.siw.service.UtenteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/carrello")
 public class CarrelloController {
     
-    @Autowired
-    private CarrelloService carrelloService;
+    private static final Logger logger = LoggerFactory.getLogger(CarrelloController.class);
     
-    @Autowired
-    private OrdineService ordineService;
+    private final CarrelloService carrelloService;
+    private final ProdottoService prodottoService;
+    private final UtenteService utenteService;
     
-    @Autowired
-    private AuthenticationHelper authenticationHelper;
-
+    public CarrelloController(CarrelloService carrelloService,
+                              ProdottoService prodottoService,
+                              UtenteService utenteService) {
+        this.carrelloService = carrelloService;
+        this.prodottoService = prodottoService;
+        this.utenteService = utenteService;
+    }
+    
+    // =============================================
+    // 🔹 RECUPERA UTENTE CORRENTE
+    // =============================================
+    
+    private Utente getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return utenteService.findByEmail(username);
+    }
+    
+    // =============================================
+    // 🔹 VISUALIZZA CARRELLO
+    // =============================================
+    
     @GetMapping
-    public String carrello(Model model) {
-        Utente utente = authenticationHelper.getCurrentUser();
-        Carrello carrello = carrelloService.getCarrello(utente);
+    public String viewCart(Model model) {
+        Utente utente = getCurrentUser();
+        Carrello carrello = carrelloService.trovaPerUtente(utente.getId());
+        
         model.addAttribute("carrello", carrello);
+        model.addAttribute("totale", carrello.getTotale());
+        model.addAttribute("numeroArticoli", carrello.getNumeroArticoli());
+        
         return "carrello/view";
     }
-    @PostMapping("/aggiungi/{prodottoId}")
-    public String aggiungiAlCarrello(@PathVariable Long prodottoId, 
-                                     @RequestParam(defaultValue = "1") int quantita,
-                                     RedirectAttributes redirectAttributes) {
-        Utente utente = authenticationHelper.getCurrentUser();
+    
+    // =============================================
+    // 🔹 AGGIUNGI PRODOTTO AL CARRELLO
+    // =============================================
+    
+    @PostMapping("/add/{prodottoId}")
+    public String addToCart(@PathVariable Long prodottoId,
+                            @RequestParam(defaultValue = "1") Integer quantita,
+                            @RequestParam(required = false) String taglia,
+                            @RequestParam(required = false) String colore) {
+        
+        Utente utente = getCurrentUser();
         
         try {
-            carrelloService.aggiungiProdotto(utente, prodottoId, quantita);
-            redirectAttributes.addFlashAttribute("successo", "✅ Prodotto aggiunto al carrello!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errore", "❌ Errore: " + e.getMessage());
+            carrelloService.aggiungiProdotto(utente.getId(), prodottoId, quantita);
+            logger.info("Prodotto {} aggiunto al carrello", prodottoId);
+        } catch (RuntimeException e) {
+            logger.error("Errore aggiunta al carrello: {}", e.getMessage());
+            // TODO: Aggiungere messaggio di errore alla sessione
         }
         
         return "redirect:/carrello";
     }
     
-    @GetMapping("/rimuovi/{prodottoId}")
-    public String rimuoviDalCarrello(@PathVariable Long prodottoId, RedirectAttributes redirectAttributes) {
-        Utente utente = authenticationHelper.getCurrentUser();
-        carrelloService.rimuoviProdotto(utente, prodottoId);
-        redirectAttributes.addFlashAttribute("successo", "🗑️ Prodotto rimosso dal carrello!");
+    // =============================================
+    // 🔹 RIMUOVI PRODOTTO DAL CARRELLO
+    // =============================================
+    
+    @PostMapping("/remove/{prodottoId}")
+    public String removeFromCart(@PathVariable Long prodottoId) {
+        Utente utente = getCurrentUser();
+        carrelloService.rimuoviProdotto(utente.getId(), prodottoId);
         return "redirect:/carrello";
     }
     
-    @PostMapping("/checkout")
-    public String checkout(RedirectAttributes redirectAttributes) {
-        Utente utente = authenticationHelper.getCurrentUser();
-        Carrello carrello = carrelloService.getCarrello(utente);
-        
-        if (carrello.getRighe().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errore", "❌ Il carrello è vuoto!");
-            return "redirect:/carrello";
-        }
-        
-        try {
-            ordineService.creaOrdine(utente, carrello);
-            redirectAttributes.addFlashAttribute("successo", "🎉 Ordine creato con successo!");
-            return "redirect:/ordini";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errore", "❌ Errore: " + e.getMessage());
-            return "redirect:/carrello";
-        }
-    }
-    @PostMapping("/aggiorna/{prodottoId}")
-    public String aggiornaQuantita(@PathVariable Long prodottoId, 
-                                   @RequestParam int quantita,
-                                   RedirectAttributes redirectAttributes) {
-        Utente utente = authenticationHelper.getCurrentUser();
-        
-        if (quantita <= 0) {
-            carrelloService.rimuoviProdotto(utente, prodottoId);
-            redirectAttributes.addFlashAttribute("successo", "🗑️ Prodotto rimosso dal carrello!");
-        } else {
-            carrelloService.aggiornaQuantita(utente, prodottoId, quantita);
-            redirectAttributes.addFlashAttribute("successo", "✅ Quantità aggiornata!");
-        }
-        
+    // =============================================
+    // 🔹 SVUOTA CARRELLO
+    // =============================================
+    
+    @PostMapping("/clear")
+    public String clearCart() {
+        Utente utente = getCurrentUser();
+        carrelloService.svuotaCarrello(utente.getId());
         return "redirect:/carrello";
     }
-    
 }
