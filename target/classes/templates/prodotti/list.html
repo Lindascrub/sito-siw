@@ -5,86 +5,135 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-    <!-- HEADER IMPORTATO -->
     <header th:replace="~{fragments/header :: header}"></header>
 
-    <!-- CONTENUTO -->
     <main>
-        <div class="catalogo-header">
-            <h2>I nostri prodotti</h2>
-            
-            <!-- 🔍 BARRA DI RICERCA -->
-            <form th:action="@{/prodotti/ricerca}" method="GET" class="search-form">
-                <input type="text" 
-                       name="q" 
-                       placeholder="Cerca prodotto..." 
-                       th:value="${query}"
-                       class="search-input"/>
-                <button type="submit" class="search-btn">🔍</button>
-                <a th:href="@{/prodotti}" th:if="${query != null}" class="search-clear">✕</a>
-            </form>
-        </div>
-
-        <!-- Risultati -->
-        <p th:if="${query != null}" class="search-results">
-            Risultati per: "<span th:text="${query}"></span>"
-            <span th:text="'(' + ${prodotti.size()} + ' prodotti)'"></span>
-        </p>
-
-        <div class="prodotti-grid">
-            <div class="prodotto-card" th:each="p : ${prodotti}">
-                <img th:src="${p.urlImmagine}" th:alt="${p.nome}" th:if="${p.urlImmagine != null}"/>
-                <img src="/images/no-image.png" th:unless="${p.urlImmagine != null}" alt="Immagine non disponibile"/>
-                <h3 th:text="${p.nome}">Nome Prodotto</h3>
-                <p class="categoria" th:text="'Categoria: ' + ${p.categoria.nome}">Categoria</p>
-                <p class="prezzo" th:text="'€ ' + ${p.prezzo}">€ 0.00</p>
-                <p class="quantita" th:text="'Disponibili: ' + ${p.quantitaDisponibile}">Disponibili: 0</p>
-                <div th:if="${!p.taglie.isEmpty()}">
-                    <span class="taglia-badge" th:each="t : ${p.taglie}" th:text="${t.codice}"></span>
+        <div class="catalogo-container">
+            <!-- FILTRI LATERALI -->
+            <aside class="filtri">
+                <h3>Filtri</h3>
+                
+                <!-- Filtro per categoria -->
+                <div class="filtro-group">
+                    <h4>Categoria</h4>
+                    <a th:href="@{/prodotti}" class="filtro-link" th:classappend="${categoriaSelezionata == null} ? 'active' : ''">Tutte</a>
+                    <a th:each="cat : ${categorie}" 
+                       th:href="@{/prodotti(categoria=${cat.nome}, page=${currentPage}, size=8)}"
+                       th:text="${cat.nome}"
+                       class="filtro-link"
+                       th:classappend="${categoriaSelezionata == cat.nome} ? 'active' : ''">
+                    </a>
                 </div>
-                <a th:href="@{/prodotto/} + ${p.id}" class="btn-dettaglio">Vedi Dettaglio</a>
+                
+                <!-- Filtro per prezzo -->
+                <div class="filtro-group">
+                    <h4>Prezzo</h4>
+                    <form th:action="@{/prodotti}" method="GET" class="prezzo-form">
+                        <div class="prezzo-inputs">
+                            <input type="number" name="minPrezzo" placeholder="Da" 
+                                   th:value="${minPrezzo}" step="1" min="0"/>
+                            <span>—</span>
+                            <input type="number" name="maxPrezzo" placeholder="A" 
+                                   th:value="${maxPrezzo}" step="1" min="0"/>
+                        </div>
+                        <button type="submit" class="btn-filtro">Applica</button>
+                        <a th:href="@{/prodotti}" class="btn-filtro-reset">Reset</a>
+                    </form>
+                </div>
+                
+                <!-- Ordinamento -->
+                <div class="filtro-group">
+                    <h4>Ordina per</h4>
+                    <select class="sort-select" onchange="window.location.href=this.value">
+                        <option th:value="@{/prodotti(page=${currentPage}, size=8, sort=id, order=asc)}" 
+                                th:selected="${sort == 'id' && order == 'asc'}">Più recenti</option>
+                        <option th:value="@{/prodotti(page=${currentPage}, size=8, sort=prezzo, order=asc)}" 
+                                th:selected="${sort == 'prezzo' && order == 'asc'}">Prezzo: dal più basso</option>
+                        <option th:value="@{/prodotti(page=${currentPage}, size=8, sort=prezzo, order=desc)}" 
+                                th:selected="${sort == 'prezzo' && order == 'desc'}">Prezzo: dal più alto</option>
+                        <option th:value="@{/prodotti(page=${currentPage}, size=8, sort=nome, order=asc)}" 
+                                th:selected="${sort == 'nome' && order == 'asc'}">Nome: A→Z</option>
+                        <option th:value="@{/prodotti(page=${currentPage}, size=8, sort=nome, order=desc)}" 
+                                th:selected="${sort == 'nome' && order == 'desc'}">Nome: Z→A</option>
+                    </select>
+                </div>
+            </aside>
+            
+            <!-- PRODOTTI -->
+            <div class="prodotti-content">
+                <div class="catalogo-header">
+                    <h2>I nostri prodotti</h2>
+                    
+                    <!-- Barra di ricerca -->
+                    <form th:action="@{/prodotti/ricerca}" method="GET" class="search-form">
+                        <button type="submit" class="search-btn">🔍</button>
+                        <input type="text" 
+                               name="q" 
+                               placeholder="Cosa stai cercando?" 
+                               th:value="${query}"
+                               class="search-input"/>
+                        <a th:href="@{/prodotti}" th:if="${query != null}" class="search-clear">✕</a>
+                    </form>
+                </div>
+
+                <!-- Risultati ricerca -->
+                <p th:if="${query != null}" class="search-results">
+                    Risultati per: "<span th:text="${query}"></span>"
+                    <span th:text="'(' + ${prodottiPage.totalElements} + ' prodotti)'"></span>
+                </p>
+
+                <div class="prodotti-grid">
+                    <div class="prodotto-card" th:each="p : ${prodotti}">
+                        <img th:src="${p.urlImmagine}" th:alt="${p.nome}" th:if="${p.urlImmagine != null}"/>
+                        <img src="/images/no-image.png" th:unless="${p.urlImmagine != null}" alt="Immagine non disponibile"/>
+                        <h3 th:text="${p.nome}">Nome Prodotto</h3>
+                        <p class="categoria" th:text="'Categoria: ' + ${p.categoria.nome}">Categoria</p>
+                        <p class="prezzo" th:text="'€ ' + ${p.prezzo}">€ 0.00</p>
+                        <p class="quantita" th:text="'Disponibili: ' + ${p.quantitaDisponibile}">Disponibili: 0</p>
+                        <div th:if="${!p.taglie.isEmpty()}">
+                            <span class="taglia-badge" th:each="t : ${p.taglie}" th:text="${t.codice}"></span>
+                        </div>
+                        <a th:href="@{/prodotto/} + ${p.id}" class="btn-dettaglio">Vedi Dettaglio</a>
+                    </div>
+                    <p th:if="${prodotti.isEmpty()}" class="nessun-prodotto">
+                        <span th:if="${query != null}">Nessun prodotto trovato per "<span th:text="${query}"></span>"</span>
+                        <span th:unless="${query != null}">Nessun prodotto disponibile al momento.</span>
+                    </p>
+                </div>
+
+                <!-- Paginazione -->
+                <div class="pagination-container" th:if="${totalPages > 1}">
+                    <div class="pagination">
+                        <a th:if="${currentPage > 0}" 
+                           th:href="@{/prodotti(page=${currentPage - 1}, size=8, categoria=${categoriaSelezionata}, minPrezzo=${minPrezzo}, maxPrezzo=${maxPrezzo}, sort=${sort}, order=${order})}" 
+                           class="page-link prev">←</a>
+                        <span th:unless="${currentPage > 0}" class="page-link prev disabled">←</span>
+                        
+                        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                            <a th:if="${i != currentPage}" 
+                               th:href="@{/prodotti(page=${i}, size=8, categoria=${categoriaSelezionata}, minPrezzo=${minPrezzo}, maxPrezzo=${maxPrezzo}, sort=${sort}, order=${order})}" 
+                               th:text="${i + 1}" 
+                               class="page-link"></a>
+                            <span th:if="${i == currentPage}" 
+                                  th:text="${i + 1}" 
+                                  class="page-link active"></span>
+                        </span>
+                        
+                        <a th:if="${currentPage < totalPages - 1}" 
+                           th:href="@{/prodotti(page=${currentPage + 1}, size=8, categoria=${categoriaSelezionata}, minPrezzo=${minPrezzo}, maxPrezzo=${maxPrezzo}, sort=${sort}, order=${order})}" 
+                           class="page-link next">→</a>
+                        <span th:unless="${currentPage < totalPages - 1}" class="page-link next disabled">→</span>
+                    </div>
+                    <div class="pagination-info">
+                        Pagina <span th:text="${currentPage + 1}"></span> di <span th:text="${totalPages}"></span>
+                        (<span th:text="${prodottiPage.totalElements}"></span> prodotti totali)
+                    </div>
+                </div>
             </div>
-            <p th:if="${prodotti.isEmpty()}" class="nessun-prodotto">
-                <span th:if="${query != null}">Nessun prodotto trovato per "<span th:text="${query}"></span>"</span>
-                <span th:unless="${query != null}">Nessun prodotto disponibile al momento.</span>
-            </p>
         </div>
-		<!-- Dopo la griglia prodotti, aggiungi la paginazione -->
-		<div class="pagination-container" th:if="${totalPages > 1}">
-		    <div class="pagination">
-		        <!-- Pagina precedente -->
-		        <a th:if="${currentPage > 0}" 
-		           th:href="@{/prodotti(page=${currentPage - 1}, size=8)}" 
-		           class="page-link prev">←</a>
-		        <span th:unless="${currentPage > 0}" class="page-link prev disabled">←</span>
-		        
-		        <!-- Numeri pagine -->
-		        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-		            <a th:if="${i != currentPage}" 
-		               th:href="@{/prodotti(page=${i}, size=8)}" 
-		               th:text="${i + 1}" 
-		               class="page-link"></a>
-		            <span th:if="${i == currentPage}" 
-		                  th:text="${i + 1}" 
-		                  class="page-link active"></span>
-		        </span>
-		        
-		        <!-- Pagina successiva -->
-		        <a th:if="${currentPage < totalPages - 1}" 
-		           th:href="@{/prodotti(page=${currentPage + 1}, size=8)}" 
-		           class="page-link next">→</a>
-		        <span th:unless="${currentPage < totalPages - 1}" class="page-link next disabled">→</span>
-		    </div>
-		    
-		    <div class="pagination-info">
-		        Pagina <span th:text="${currentPage + 1}"></span> di <span th:text="${totalPages}"></span>
-		        (<span th:text="${prodottiPage.totalElements}"></span> prodotti totali)
-		    </div>
-		</div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
-    </footer>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>
