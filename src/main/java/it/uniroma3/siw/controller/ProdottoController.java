@@ -2,7 +2,6 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Prodotto;
 import it.uniroma3.siw.model.Categoria;
-import it.uniroma3.siw.model.Taglia;
 import it.uniroma3.siw.service.ProdottoService;
 import it.uniroma3.siw.service.CategoriaService;
 import it.uniroma3.siw.service.TagliaService;

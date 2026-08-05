@@ -10,11 +10,17 @@ import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.sql.DataSource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+
+import java.io.IOException;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity  
 public class SecurityConfig {
 
     @Bean
@@ -35,32 +41,49 @@ public class SecurityConfig {
         return manager;
     }
 
+    //  HANDLER PER LOGIN SUCCESS (anche OAuth2)
+    @Bean
+    public AuthenticationSuccessHandler successHandler() {
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, 
+                                               HttpServletResponse response,
+                                               Authentication authentication) throws IOException {
+                response.sendRedirect("/");
+            }
+        };
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/"
-                		, "/index",
-                		"/categorie",
-                		"/prodotti", "/prodotti/categoria/**", "/prodotti/**",
-                		"/prodotto/**", 
-                		"/css/**", 
-                		"/images/**").permitAll()
-                .requestMatchers("/register", "/registration-success", "/login", "/oauth2/**").permitAll()
+                //  Risorse pubbliche
+                .requestMatchers("/", "/index", "/prodotti", "/prodotti/**", 
+                                "/categorie", "/css/**", "/images/**", "/js/**").permitAll()
+                .requestMatchers("/register", "/registration-success", "/login", 
+                                "/oauth2/**").permitAll()
+                // Solo ADMIN
                 .requestMatchers("/admin/**").hasRole(Credenziali.ADMIN_ROLE)
+                // Carrello e ordini - autenticato
+                .requestMatchers("/carrello/**", "/ordini/**", "/recensioni/new/**").authenticated()
                 .anyRequest().authenticated()
             )
+            //  OAuth2 Login (Google)
             .oauth2Login(oauth2 -> oauth2
-            	    .loginPage("/login")
-            	    .defaultSuccessUrl("/oauth2/success", true)  // ← usa il nostro endpoint
-            	    .failureUrl("/login?error=true")
-            	    .permitAll()
-            	)
+                .loginPage("/login")
+                .defaultSuccessUrl("/oauth2/success", true)
+                .failureUrl("/login?error=true")
+                .successHandler(successHandler())
+                .permitAll()
+            )
+            // Form Login
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)
                 .permitAll()
             )
+            //  Logout
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")

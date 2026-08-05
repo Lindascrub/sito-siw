@@ -1,39 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Lunna</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
-</head>
+<head th:replace="fragments/base :: head(title='Home')"></head>
 <body>
-    <header th:replace="~{fragments/header :: header}"></header>
 
-  <main class="home-centrato">
-        <section class="hero-centrato">
-            <h1>Benvenuto su Lunna</h1>
-            <a th:href="@{/login}" class="btn-hero">Registrati per rimanere aggiornato</a>
-        </section>
-        
-        <div class="home-links">
-            <a th:href="@{/categorie}" class="home-card-centrato">
-                <h3>Categorie</h3>
-                <p>Esplora le nostre categorie</p>
-            </a>
-            <a th:href="@{/prodotti}" class="home-card-centrato">
-                <h3>Catalogo</h3>
-                <p>Scopri tutti i prodotti</p>
-            </a>
-            <a th:href="@{/carrello}" class="home-card-centrato">
-                <h3>Carrello</h3>
-                <p>Vedi il tuo carrello</p>
-            </a>
-            <a th:href="@{/ordini}" class="home-card-centrato" th:if="${utenteCorrente != null}">
-                <h3 Ordini</h3>
-                <p>I tuoi ordini</p>
-            </a>
+    <header th:replace="fragments/base :: navbar"></header>
+
+    <main class="container py-4" th:fragment="content">
+        <!-- Hero Section -->
+        <div class="row g-4">
+            <div class="col-12 text-center py-5 bg-light rounded">
+                <h1 class="display-4">👗 Benvenuto su IntimiStore</h1>
+                <p class="lead">Scopri la nostra collezione di abbigliamento intimo di alta qualità</p>
+                <a th:href="@{/prodotti}" class="btn btn-primary btn-lg">🛍️ Esplora il catalogo</a>
+            </div>
         </div>
+
+        <!-- Prodotti in evidenza -->
+        <h2 class="mt-5">🔥 Prodotti in evidenza</h2>
+        <div class="row g-4" th:if="${prodottiInEvidenza != null && !prodottiInEvidenza.isEmpty()}">
+            <div class="col-md-3" th:each="prodotto : ${prodottiInEvidenza}">
+                <div class="card h-100 product-card">
+                    <img th:src="${prodotto.urlImage != null ? prodotto.urlImage : '/images/placeholder.jpg'}"
+                         class="card-img-top" th:alt="${prodotto.nome}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" th:text="${prodotto.nome}">Nome</h5>
+                        <p class="card-text text-primary fw-bold" th:text="'€' + ${prodotto.prezzo}">€19.99</p>
+                        <a th:href="@{/prodotti/{id}(id=${prodotto.id})}" class="btn btn-outline-primary btn-sm">Vedi dettaglio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p th:if="${prodottiInEvidenza == null || prodottiInEvidenza.isEmpty()}" class="text-muted">
+            Nessun prodotto disponibile al momento.
+        </p>
     </main>
-	
-	<div th:replace="~{fragments/footer :: footer}"></div>
+
+    <footer th:replace="fragments/base :: footer"></footer>
 
 </body>
 </html>

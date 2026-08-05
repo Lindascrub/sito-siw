@@ -1,5 +1,7 @@
 package it.uniroma3.siw.dto;
 
+import java.util.Objects;
+
 public class ArticoloCarrelloDto {
     private Long prodottoId;
     private Integer quantita;
@@ -32,4 +34,26 @@ public class ArticoloCarrelloDto {
     
     public String getColore() { return colore; }
     public void setColore(String colore) { this.colore = colore; }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ArticoloCarrelloDto other = (ArticoloCarrelloDto) obj;
+        return Objects.equals(prodottoId, other.prodottoId);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(prodottoId);
+    }
+    
+    @Override
+    public String toString() {
+        return "ArticoloCarrelloDTO{" +
+               "prodottoId=" + prodottoId +
+               ", quantita=" + quantita +
+               ", taglia='" + taglia + '\'' +
+               ", colore='" + colore + '\'' +
+               '}';
+    }
 }

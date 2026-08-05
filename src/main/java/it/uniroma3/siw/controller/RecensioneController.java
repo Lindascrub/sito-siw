@@ -2,51 +2,79 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Recensione;
 import it.uniroma3.siw.model.Utente;
-import it.uniroma3.siw.security.AuthenticationHelper;
+import it.uniroma3.siw.service.ProdottoService;
 import it.uniroma3.siw.service.RecensioneService;
-import org.springframework.beans.factory.annotation.Autowired;
+import it.uniroma3.siw.service.UtenteService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/recensioni")
 public class RecensioneController {
-
-    @Autowired
-    private RecensioneService recensioneService;
     
-    @Autowired
-    private AuthenticationHelper authenticationHelper;
+	 private static final Logger logger = LoggerFactory.getLogger(RecensioneController.class);
+	    
+	    private final RecensioneService recensioneService;
+	    private final UtenteService utenteService;
+	    private final ProdottoService prodottoService;  // ← AGGIUNGI!
+  
 
-    @PostMapping("/recensione/aggiungi")
-    public String aggiungiRecensione(@RequestParam Long prodottoId,
-                                     @RequestParam String titolo,
-                                     @RequestParam String testo,
-                                     @RequestParam int valutazione,
-                                     RedirectAttributes redirectAttributes) {
-        
-        Utente utente = authenticationHelper.getCurrentUser();
-        
-        if (utente == null) {
-            redirectAttributes.addFlashAttribute("errore", "❌ Devi essere loggato per lasciare una recensione!");
-            return "redirect:/login";
+
+    public RecensioneController(RecensioneService recensioneService,
+            UtenteService utenteService,
+            ProdottoService prodottoService) {  // ← AGGIUNGI!
+this.recensioneService = recensioneService;
+this.utenteService = utenteService;
+this.prodottoService = prodottoService;  // ← AGGIUNGI!
+}
+    private Utente getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return utenteService.findByEmail(username);
+    }
+    
+    // =============================================
+// 🔹 FORM NUOVA RECENSIONE
+// =============================================
+
+@GetMapping("/new/{prodottoId}")
+public String createRecensioneForm(@PathVariable Long prodottoId, Model model) {
+    Recensione recensione = new Recensione();
+    recensione.setProdotto(prodottoService.findById(prodottoId));
+    model.addAttribute("recensione", recensione);
+    return "recensioni/form";
+}
+
+@PostMapping("/new/{prodottoId}")
+public String saveRecensione(@PathVariable Long prodottoId,
+                             @Valid @ModelAttribute("recensione") Recensione recensione,
+                             BindingResult bindingResult,
+                             Model model) {
+    
+    if (bindingResult.hasErrors()) {
+        return "recensioni/form";
+    }
+    
+    try {
+        Utente utente = getCurrentUser();
+        recensioneService.salvaRecensione(
+            utente.getId(),
+            prodottoId,
+            recensione.getTitolo(),
+            recensione.getTesto(),
+            recensione.getValutazione()
+        );
+        return "redirect:/prodotti/" + prodottoId;
+    } catch (RuntimeException e) {
+        model.addAttribute("errore", e.getMessage());
+        return "recensioni/form";
         }
-        
-        try {
-            Recensione recensione = new Recensione();
-            recensione.setTitolo(titolo);
-            recensione.setTesto(testo);
-            recensione.setValutazione(valutazione);
-            // recensione.setProdotto(prodotto); // devi passare il prodotto
-            // recensione.setUtente(utente);
-            
-            recensioneService.saveRecensione(recensione);
-            redirectAttributes.addFlashAttribute("successo", "✅ Recensione aggiunta con successo!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errore", "❌ Errore: " + e.getMessage());
-        }
-        
-        return "redirect:/prodotto/" + prodottoId;
     }
 }

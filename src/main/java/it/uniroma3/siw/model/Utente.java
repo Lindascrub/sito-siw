@@ -132,5 +132,10 @@ public class Utente {
 	public void setIndirizzo(String indirizzo) {
 		this.indirizzo = indirizzo;
 	}
+
+	public void setCredenziali(Credenziali credenziali2) {
+		// TODO Auto-generated method stub
+		
+	}
    
 }

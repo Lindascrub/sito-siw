@@ -1,128 +1,97 @@
 package it.uniroma3.siw.controller;
 
-import it.uniroma3.siw.model.Credenziali;
-import it.uniroma3.siw.model.Utente;
-import it.uniroma3.siw.service.CredenzialiService;
+import it.uniroma3.siw.dto.RegistrationDto;
 import it.uniroma3.siw.service.UtenteService;
-import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;  // ← AGGIUNGI QUESTO IMPORT!
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
-
-    @Autowired
-    private CredenzialiService credenzialiService;
     
-    @Autowired
-    private UtenteService utenteService;
-
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private final UtenteService utenteService;
+    
+    public AuthController(UtenteService utenteService) {
+        this.utenteService = utenteService;
+    }
+    
+    // =============================================
+    // 🔹 LOGIN
+    // =============================================
+    
     @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping("/register")
-    public String register(Model model) {
-        return "register";
+    public String login(@RequestParam(required = false) String error, 
+                        @RequestParam(required = false) String successo,
+                        Model model) {
+        if (error != null) {
+            model.addAttribute("errore", "Email o password non validi");
+        }
+        if (successo != null) {
+            model.addAttribute("successo", successo);
+        }
+        return "auth/login";
     }
     
-    @GetMapping("/logout-manuale")
-    public String logoutManuale(HttpServletRequest request) {
-        SecurityContextHolder.clearContext();
-        request.getSession().invalidate();
-        return "redirect:/";
+    // =============================================
+    // 🔹 FORM REGISTRAZIONE
+    // =============================================
+    
+    @GetMapping("/register")
+    public String registerForm(Model model) {
+        model.addAttribute("registrationDto", new RegistrationDto());
+        return "auth/register";
     }
-
+    
+    // =============================================
+    // 🔹 REGISTRAZIONE - ✅ IL TUO CODICE VA QUI!
+    // =============================================
+    
     @PostMapping("/register")
-    public String register(@RequestParam String nome,
-                           @RequestParam String cognome,
-                           @RequestParam String email,
-                           @RequestParam String username,
-                           @RequestParam String password,
+    public String register(@Valid @ModelAttribute("registrationDto") RegistrationDto registrationDto,
+                           BindingResult bindingResult,
                            Model model,
-                           RedirectAttributes redirectAttributes) {  // ← AGGIUNGI QUESTO PARAMETRO!
+                           RedirectAttributes redirectAttributes) {
         
-        // Controlla se username esiste già
-        if (credenzialiService.getCredenziali(username) != null) {
-            redirectAttributes.addFlashAttribute("errore", "❌ Username già in uso!");
-            return "redirect:/register";  // ← USO redirect invece di return "register"
-        }
-
-        // Crea l'utente
-        Utente utente = new Utente();
-        utente.setNome(nome);
-        utente.setCognome(cognome);
-        utente.setEmail(email);
-        
-        // Crea le credenziali
-        Credenziali credenziali = new Credenziali();
-        credenziali.setUsername(username);
-        credenziali.setRuolo(Credenziali.DEFAULT_ROLE);
-        
-        // 🔥 CODIFICA LA PASSWORD PRIMA DI SALVARE!
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String passwordCodificata = encoder.encode(password);
-        credenziali.setPassword(passwordCodificata);
-        
-        System.out.println("🔐 Password originale: " + password);
-        System.out.println("🔐 Password codificata: " + passwordCodificata);
-        
-        // Collega
-        credenziali.setUtente(utente);
-        utente.setCredenziali(credenziali);
-        
-        // Salva
-        utenteService.saveUtente(utente);
-        credenzialiService.saveCredenzialiRaw(credenziali);
-        
-        redirectAttributes.addFlashAttribute("successo", "✅ Registrazione completata! Ora puoi accedere.");
-        return "redirect:/login";
-    }
-    @GetMapping("/oauth2/success")
-    public String oauth2Success(OAuth2AuthenticationToken authentication, RedirectAttributes redirectAttributes) {
-        // Prendi i dati dall'utente Google
-        Map<String, Object> attributes = authentication.getPrincipal().getAttributes();
-        String email = (String) attributes.get("email");
-        String nome = (String) attributes.get("given_name");
-        String cognome = (String) attributes.get("family_name");
-        
-        // Controlla se l'utente esiste già nel database
-        Credenziali credenziali = credenzialiService.getCredenziali(email);
-        
-        if (credenziali == null) {
-            // Crea un nuovo utente
-            Utente utente = new Utente();
-            utente.setNome(nome != null ? nome : "Google");
-            utente.setCognome(cognome != null ? cognome : "User");
-            utente.setEmail(email);
-            
-            Credenziali newCredenziali = new Credenziali();
-            newCredenziali.setUsername(email);
-            newCredenziali.setPassword(""); // Password vuota per OAuth
-            newCredenziali.setRuolo(Credenziali.DEFAULT_ROLE);
-            newCredenziali.setUtente(utente);
-            utente.setCredenziali(newCredenziali);
-            
-            utenteService.saveUtente(utente);
-            credenzialiService.saveCredenzialiRaw(newCredenziali);
-            
-            redirectAttributes.addFlashAttribute("successo", "✅ Benvenuto " + nome + "! Login con Google effettuato!");
-        } else {
-            redirectAttributes.addFlashAttribute("successo", "👋 Bentornato " + nome + "!");
+        // 🔹 Se ci sono errori di validazione, torna al form
+        if (bindingResult.hasErrors()) {
+            return "auth/register";
         }
         
-        return "redirect:/";
+        // 🔹 Controllo che password e conferma coincidano
+        if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
+            model.addAttribute("errore", "Le password non coincidono");
+            return "auth/register";
+        }
+        
+        try {
+            // ✅ REGISTRAZIONE UTENTE
+            utenteService.registraUtente(
+                registrationDto.getNome(),
+                registrationDto.getCognome(),
+                registrationDto.getEmail(),
+                registrationDto.getUsername(),
+                registrationDto.getPassword()
+            );
+            
+            logger.info("Nuovo utente registrato: {}", registrationDto.getEmail());
+            
+            // ✅ SUCCESSO - Redirect con messaggio
+            redirectAttributes.addAttribute("successo", "Registrazione completata! Ora puoi accedere.");
+            return "redirect:/login";
+            
+        } catch (RuntimeException e) {
+            // ❌ ERRORE - Torna al form con messaggio
+            model.addAttribute("errore", e.getMessage());
+            return "auth/register";
+        }
     }
 }

@@ -1,7 +1,6 @@
 package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Carrello;
-import it.uniroma3.siw.model.Prodotto;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.service.CarrelloService;
 import it.uniroma3.siw.service.ProdottoService;
