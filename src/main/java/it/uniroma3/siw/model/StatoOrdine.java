@@ -7,3 +7,4 @@ public enum StatoOrdine {
     CONSEGNATO,
     ANNULLATO
 }
+

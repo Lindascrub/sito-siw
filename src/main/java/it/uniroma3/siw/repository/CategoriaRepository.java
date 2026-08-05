@@ -1,15 +1,15 @@
 package it.uniroma3.siw.repository;
 
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
-
 import it.uniroma3.siw.model.Categoria;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.Optional;
 
-public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
-    // Questo metodo trova le categorie per nome (esatto)
-    List<Categoria> findByNome(String nome);
+public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     
-    // Questo metodo trova le categorie che contengono una certa parola nel nome
-    List<Categoria> findByNomeContainingIgnoreCase(String nome);
+    Optional<Categoria> findByNome(String nome);
+    
+    boolean existsByNome(String nome);
+    
+    List<Categoria> findAllByOrderByNomeAsc();
 }

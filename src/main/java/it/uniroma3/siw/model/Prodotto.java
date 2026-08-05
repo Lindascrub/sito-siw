@@ -1,5 +1,6 @@
 package it.uniroma3.siw.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -46,29 +48,42 @@ public class Prodotto {
     private String urlImage;
     
     // RELAZIONE: un prodotto appartiene a una categoria
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoria_id", nullable = false) 
     private Categoria categoria;
     
     // RELAZIONE: un prodotto può avere più taglie
     @ElementCollection
     @CollectionTable(name = "prodotto_taglie")
-    @Column(name = "taglie")
-    private List<Taglia> taglie;
+    @Column(name = "taglia")
+    private List<String> taglieDisponibili = new ArrayList<>();
     
     @ElementCollection
     @CollectionTable(name = "prodotto_colori")
     @Column(name = "colori")
-    private List<String> colori; 
+    private List<String> coloriDisponibili = new ArrayList<>(); 
     
     @Column(unique = true)
     private String codiceModello;
     
-    private Boolean èattivo = true; 
+    private Boolean attivo = true; 
     
     // Costruttore vuoto
-    public Prodotto() {}
-
+    public Prodotto() {
+    	
+    }
+    
+    public Prodotto(String nome, Double prezzo) {
+        this.nome = nome;
+        this.prezzo = prezzo;
+    }
+    
+    public Prodotto(String nome, String descrizione, Double prezzo, Categoria categoria) {
+        this.nome = nome;
+        this.descrizione = descrizione;
+        this.prezzo = prezzo;
+        this.categoria = categoria;
+    }
     
     // getter e setter
 	public Long getId() {
@@ -127,20 +142,20 @@ public class Prodotto {
 		this.categoria = categoria;
 	}
 
-	public List<Taglia> getTaglie() {
-		return taglie;
+	public List<String> getTaglieDisponibili() {
+		return taglieDisponibili;
 	}
 
-	public void setTaglie(List<Taglia> taglie) {
-		this.taglie = taglie;
+	public void setTaglieDisponibili(List<String> taglieDisponibili) {
+		this.taglieDisponibili = taglieDisponibili;
 	}
 
-	public List<String> getColori() {
-		return colori;
+	public List<String> getColoriDisponibili() {
+		return coloriDisponibili;
 	}
 
-	public void setColori(List<String> colori) {
-		this.colori = colori;
+	public void setColoriDisponibili(List<String> coloriDisponibili) {
+		this.coloriDisponibili = coloriDisponibili;
 	}
 
 	public String getCodiceModello() {
@@ -151,32 +166,51 @@ public class Prodotto {
 		this.codiceModello = codiceModello;
 	}
 
-	public Boolean getÈattivo() {
-		return èattivo;
+	
+	public Boolean getAttivo() {
+		return attivo;
 	}
 
-	public void setÈattivo(Boolean èattivo) {
-		this.èattivo = èattivo;
+	public void setAttivo(Boolean attivo) {
+		this.attivo = attivo;
 	}
 
 	//hashcode and equal 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Prodotto other = (Prodotto) obj;
-		return Objects.equals(id, other.id);
-	}
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        
+        Prodotto other = (Prodotto) obj;
+        
+        // Se entrambi hanno id, confronto per id
+        if (id != null && other.id != null) {
+            return id.equals(other.id);
+        }
+        
+        // Se id è null, confronto per nome + categoria
+        if (id == null && other.id == null) {
+            return Objects.equals(nome, other.nome) && 
+                   Objects.equals(categoria, other.categoria);
+        }
+        
+        return false;
+    }
     
-    
+    @Override
+    public int hashCode() {
+        if (id != null) {
+            return id.hashCode();
+        }
+        return Objects.hash(nome, categoria);
+    }
+    @Override
+    public String toString() {
+        return "Prodotto{" +
+               "id=" + id +
+               ", nome='" + nome + '\'' +
+               ", prezzo=" + prezzo +
+               ", categoria=" + (categoria != null ? categoria.getNome() : "null") +
+               '}';
+    }
 }

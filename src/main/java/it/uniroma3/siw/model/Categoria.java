@@ -13,7 +13,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @NotBlank(message = "Il nome è obbligatorio")
     private String nome;
     
