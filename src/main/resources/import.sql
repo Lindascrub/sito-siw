@@ -79,8 +79,8 @@ INSERT INTO prodotto_colori (prodotto_id, colori) VALUES ((SELECT id FROM prodot
 -- ============================================
 -- 🔹 CREDENZIALI
 -- ============================================
-INSERT INTO credenziali (id, username, password, ruolo) VALUES (nextval('credenziali_seq'), 'admin', '$2a$10$3qYwM6G8q5Y5W5W5W5W5W5O5O5O5O5O5O5O5O', 'ADMIN');
-INSERT INTO credenziali (id, username, password, ruolo) VALUES (nextval('credenziali_seq'), 'cliente', '$2a$10$4qYwM6G8q5Y5W5W5W5W5W5O5O5O5O5O5O5O5O', 'CLIENTE');
+INSERT INTO credenziali (id, username, password, ruolo) VALUES (nextval('credenziali_seq'), 'admin', '$2a$10$w2UFmlGVSdDSjjesWoZfbuf5QhtX6r9o03zOQJGrvhxb0nb.4d..G', 'ADMIN');
+INSERT INTO credenziali (id, username, password, ruolo) VALUES (nextval('credenziali_seq'), 'cliente', '$2a$10$iUeNL6Jr7EP4/wZ0hEZKaum5OIvMTckoyTbIXhBI/Xgz.PyN2Mr9O', 'CLIENTE');
 
 -- ============================================
 -- 🔹 UTENTI
