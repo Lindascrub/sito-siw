@@ -25,14 +25,14 @@ public class Prodotto {
     private String descrizione;
     
     @NotNull(message = "Il prezzo è obbligatorio")
-    @Min(value = 1, message = "Il prezzo deve essere maggiore di 0")
+    @Min(value = 0, message = "Il prezzo deve essere maggiore di 0")
     private Double prezzo;
     
     @NotNull(message = "La quantità è obbligatoria")
     @Min(value = 0, message = "La quantità non può essere negativa")
     private Integer quantitaDisponibile;
     
-    private String urlImmagine;
+    private String urlImage;
     
     // RELAZIONE: un prodotto appartiene a una categoria
     @ManyToOne
@@ -63,8 +63,8 @@ public class Prodotto {
         this.quantitaDisponibile = quantitaDisponibile; 
     }
     
-    public String getUrlImmagine() { return urlImmagine; }
-    public void setUrlImmagine(String urlImmagine) { this.urlImmagine = urlImmagine; }
+    public String getUrlImmagine() { return urlImage; }
+    public void setUrlImmagine(String urlImage) { this.urlImage = urlImage; }
     
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }

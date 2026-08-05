@@ -1,0 +1,180 @@
+{
+  "name": "it.uniroma3.siw.repository.ProdottoRepository",
+  "module": "JPA",
+  "type": "IMPERATIVE",
+  "methods": [
+    {
+      "name": "findByCategoriaId",
+      "signature": "public abstract java.util.List<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByCategoriaId(java.lang.Long)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE p.categoria.id = :categoriaId"
+      }
+    },
+    {
+      "name": "findByCategoriaNome",
+      "signature": "public abstract org.springframework.data.domain.Page<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByCategoriaNome(java.lang.String,org.springframework.data.domain.Pageable)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p LEFT JOIN p.categoria c WHERE c.nome = :categoriaNome",
+        "count-query": "SELECT COUNT(p) FROM Prodotto p LEFT JOIN p.categoria c WHERE c.nome = :categoriaNome"
+      }
+    },
+    {
+      "name": "findByNomeContainingIgnoreCase",
+      "signature": "public abstract java.util.List<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByNomeContainingIgnoreCase(java.lang.String)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE UPPER(p.nome) LIKE UPPER(:nome) ESCAPE '\\'"
+      }
+    },
+    {
+      "name": "findByNomeContainingIgnoreCase",
+      "signature": "public abstract org.springframework.data.domain.Page<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByNomeContainingIgnoreCase(java.lang.String,org.springframework.data.domain.Pageable)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE UPPER(p.nome) LIKE UPPER(:nome) ESCAPE '\\'",
+        "count-query": "SELECT COUNT(p) FROM Prodotto p WHERE UPPER(p.nome) LIKE UPPER(:nome) ESCAPE '\\'"
+      }
+    },
+    {
+      "name": "findByPrezzoBetween",
+      "signature": "public abstract java.util.List<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByPrezzoBetween(java.lang.Double,java.lang.Double)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE p.prezzo BETWEEN :min AND :max"
+      }
+    },
+    {
+      "name": "findByPrezzoBetween",
+      "signature": "public abstract org.springframework.data.domain.Page<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByPrezzoBetween(java.lang.Double,java.lang.Double,org.springframework.data.domain.Pageable)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE p.prezzo BETWEEN :min AND :max",
+        "count-query": "SELECT COUNT(p) FROM Prodotto p WHERE p.prezzo BETWEEN :min AND :max"
+      }
+    },
+    {
+      "name": "findByPrezzoGreaterThanEqual",
+      "signature": "public abstract org.springframework.data.domain.Page<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByPrezzoGreaterThanEqual(java.lang.Double,org.springframework.data.domain.Pageable)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE p.prezzo >= :min",
+        "count-query": "SELECT COUNT(p) FROM Prodotto p WHERE p.prezzo >= :min"
+      }
+    },
+    {
+      "name": "findByPrezzoLessThanEqual",
+      "signature": "public abstract org.springframework.data.domain.Page<it.uniroma3.siw.model.Prodotto> it.uniroma3.siw.repository.ProdottoRepository.findByPrezzoLessThanEqual(java.lang.Double,org.springframework.data.domain.Pageable)",
+      "query": {
+        "query": "SELECT p FROM Prodotto p WHERE p.prezzo <= :max",
+        "count-query": "SELECT COUNT(p) FROM Prodotto p WHERE p.prezzo <= :max"
+      }
+    },
+    {
+      "name": "findAll",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "count",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "delete",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "deleteAll",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "deleteAll",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "deleteAllById",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "deleteById",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "existsById",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "findAll",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "findAllById",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "findById",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "save",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "saveAll",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    },
+    {
+      "name": "findAll",
+      "signature": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+      "fragment": {
+        "interface": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
+        "fragment": "org.springframework.data.jpa.repository.support.SimpleJpaRepository"
+      }
+    }
+  ]
+}
