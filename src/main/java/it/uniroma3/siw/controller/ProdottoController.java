@@ -100,7 +100,7 @@ public class ProdottoController {
                                        @RequestParam(defaultValue = "8") int size,
                                        Model model) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<Prodotto> prodottiPage = prodottoRepository.findByCategoriaId(categoriaId, pageable);
+        Page<Prodotto> prodottiPage = (Page<Prodotto>) prodottoRepository.findByCategoriaId(categoriaId);
         
         model.addAttribute("prodotti", prodottiPage.getContent());
         model.addAttribute("prodottiPage", prodottiPage);

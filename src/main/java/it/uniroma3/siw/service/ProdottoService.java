@@ -2,7 +2,6 @@ package it.uniroma3.siw.service;
 
 import it.uniroma3.siw.model.Prodotto;
 import it.uniroma3.siw.repository.ProdottoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +11,11 @@ import java.util.Optional;
 @Service
 public class ProdottoService {
     
-    @Autowired
     private ProdottoRepository prodottoRepository;
+    
+    public ProdottoService(ProdottoRepository prodottoRepository) {
+        this.prodottoRepository = prodottoRepository;
+    }
     
     @Transactional(readOnly = true)
     public List<Prodotto> getAllProdotti() {

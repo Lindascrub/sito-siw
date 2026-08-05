@@ -21,6 +21,6 @@ public interface ProdottoRepository extends CrudRepository<Prodotto, Long>, Pagi
     
     // Query senza paginazione
     List<Prodotto> findByCategoriaId(Long categoriaId);
-n    List<Prodotto> findByNomeContainingIgnoreCase(String nome);
+    List<Prodotto> findByNomeContainingIgnoreCase(String nome);
     List<Prodotto> findByPrezzoBetween(Double min, Double max);
 }
