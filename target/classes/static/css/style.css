@@ -1,16 +1,20 @@
 /* ============================================
-   TEMA SCURO MINIMAL
+   TEMA — EDITORIALE / LUSSO SCURO
    ============================================ */
 :root {
-    --black: #0a0a0a;
-    --dark: #141414;
+    --bg: #0a0a0a;
+    --bg-card: #141414;
     --white: #ffffff;
     --white-80: rgba(255,255,255,0.8);
     --white-50: rgba(255,255,255,0.5);
     --white-20: rgba(255,255,255,0.2);
-    --gold: #c9a84c;
+    --black: #000000;
+    --text: #ffffff;
+    --text-muted: #888888;
     --border: #2a2a2a;
-    --transition: all 0.3s ease;
+    --gold: #c9a84c;
+    --gold-deep: #a3853a;
+    --transition: 0.3s ease;
 }
 
 * {
@@ -21,15 +25,14 @@
 
 html, body {
     height: 100%;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    background: var(--black);
-    color: var(--white);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
 a {
+    color: var(--text);
     text-decoration: none;
-    color: var(--white);
-    transition: var(--transition);
 }
 
 a:hover {
@@ -37,10 +40,10 @@ a:hover {
 }
 
 /* ============================================
-   NAVBAR SUPERIORE
+   NAVBAR (NERA, LOGO AL CENTRO)
    ============================================ */
 .nav-top {
-    background: var(--black);
+    background: var(--bg);
     padding: 16px 0;
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -54,7 +57,48 @@ a:hover {
     justify-content: space-between;
 }
 
-/* Hamburger (3 linee) */
+.nav-top .logo {
+    font-family: 'Georgia', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+}
+
+.nav-top .logo a {
+    color: var(--text);
+}
+
+.nav-top .nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav-top .nav-icons a,
+.nav-top .nav-icons button {
+    color: var(--text);
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    position: relative;
+}
+
+.nav-top .nav-icons .badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: var(--gold);
+    color: #000;
+    font-size: 0.5rem;
+    border-radius: 50%;
+    padding: 2px 6px;
+    min-width: 16px;
+    text-align: center;
+}
+
+/* Menu hamburger */
 .nav-top .menu-toggle {
     background: none;
     border: none;
@@ -62,7 +106,6 @@ a:hover {
     flex-direction: column;
     gap: 4px;
     cursor: pointer;
-    padding: 4px;
 }
 
 .nav-top .menu-toggle span {
@@ -77,59 +120,23 @@ a:hover {
     background: var(--gold);
 }
 
-/* Logo */
-.nav-top .logo {
-    font-family: 'Georgia', serif;
-    font-size: 1.8rem;
-    font-weight: 300;
-    letter-spacing: 6px;
-    text-transform: uppercase;
+.nav-top .menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
 }
 
-.nav-top .logo a {
-    color: var(--white);
+.nav-top .menu-toggle.active span:nth-child(2) {
+    opacity: 0;
 }
 
-.nav-top .logo a:hover {
-    color: var(--white);
-}
-
-/* Icone destra */
-.nav-top .nav-icons {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.nav-top .nav-icons a {
-    color: var(--white);
-    font-size: 1.2rem;
-    position: relative;
-}
-
-.nav-top .nav-icons a:hover {
-    color: var(--gold);
-}
-
-.nav-top .nav-icons .badge {
-    position: absolute;
-    top: -8px;
-    right: -10px;
-    background: var(--gold);
-    color: var(--black);
-    font-size: 0.5rem;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 50%;
-    min-width: 16px;
-    text-align: center;
+.nav-top .menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
 }
 
 /* ============================================
-   MENU CATEGORIE (DESKTOP)
+   MENU CATEGORIE
    ============================================ */
 .nav-menu {
-    background: var(--black);
+    background: var(--bg);
     border-bottom: 1px solid var(--border);
     padding: 10px 0;
 }
@@ -144,74 +151,14 @@ a:hover {
 }
 
 .nav-menu ul li a {
-    color: var(--white-50);
+    color: var(--text-muted);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-weight: 400;
-    transition: var(--transition);
 }
 
 .nav-menu ul li a:hover {
-    color: var(--gold);
-}
-
-/* ============================================
-   MENU MOBILE (OVERLAY)
-   ============================================ */
-.nav-mobile {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--black);
-    z-index: 2000;
-    padding: 60px 30px 30px;
-    overflow-y: auto;
-    display: none;
-}
-
-.nav-mobile.open {
-    display: block;
-}
-
-.nav-mobile .close-menu {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: var(--white);
-    font-size: 1.8rem;
-    cursor: pointer;
-}
-
-.nav-mobile .close-menu:hover {
-    color: var(--gold);
-}
-
-.nav-mobile ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 40px;
-}
-
-.nav-mobile ul li {
-    margin-bottom: 20px;
-}
-
-.nav-mobile ul li a {
-    color: var(--white);
-    font-size: 1.4rem;
-    font-weight: 300;
-    letter-spacing: 1px;
-    transition: var(--transition);
-}
-
-.nav-mobile ul li a:hover {
-    color: var(--gold);
-    padding-left: 10px;
+    color: var(--text);
 }
 
 /* ============================================
@@ -220,8 +167,8 @@ a:hover {
 .hero {
     padding: 80px 20px;
     text-align: center;
-    background: linear-gradient(135deg, #0a0a0a, #141414);
-    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0a0a 40%, #1a1a1a 100%);
+    border-bottom: 1px solid var(--white-20);
 }
 
 .hero h1 {
@@ -230,6 +177,7 @@ a:hover {
     font-weight: 300;
     letter-spacing: 8px;
     text-transform: uppercase;
+    color: var(--white);
 }
 
 .hero p {
@@ -243,6 +191,7 @@ a:hover {
     padding: 12px 40px;
     border: 1px solid var(--white);
     color: var(--white);
+    background: transparent;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-size: 0.75rem;
@@ -255,12 +204,12 @@ a:hover {
 }
 
 /* ============================================
-   BEST SELLER
+   TITOLI SEZIONE
    ============================================ */
 .section-title {
     text-align: center;
     font-family: 'Georgia', serif;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 300;
     letter-spacing: 6px;
     text-transform: uppercase;
@@ -277,6 +226,38 @@ a:hover {
     margin: 12px auto 0;
 }
 
+/* ============================================
+   CITAZIONE EDITORIALE
+   ============================================ */
+.quote-section {
+    max-width: 640px;
+    margin: 20px auto 60px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.quote-section p {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--white);
+}
+
+.quote-section span {
+    display: block;
+    margin-top: 16px;
+    font-style: normal;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+
+/* ============================================
+   BEST SELLER
+   ============================================ */
 .bestseller-section {
     max-width: 1000px;
     margin: 0 auto 40px;
@@ -313,12 +294,13 @@ a:hover {
     left: 0;
     width: 100%;
     padding: 20px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
-    color: var(--white);
+    background: linear-gradient(transparent, rgba(0,0,0,0.75));
+    color: white;
 }
 
 .bestseller-item .item-overlay h4 {
-    font-size: 0.9rem;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
     font-weight: 300;
     letter-spacing: 1px;
     margin-bottom: 4px;
@@ -363,10 +345,10 @@ a:hover {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--white-20);
+    background: rgba(255,255,255,0.1);
+    border: none;
     color: var(--white);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     padding: 12px 16px;
     cursor: pointer;
     z-index: 10;
@@ -374,8 +356,7 @@ a:hover {
 }
 
 .carousel-btn:hover {
-    background: rgba(255,255,255,0.15);
-    border-color: var(--gold);
+    background: rgba(255,255,255,0.2);
 }
 
 .carousel-btn.prev { left: 0; }
@@ -398,84 +379,222 @@ a:hover {
     letter-spacing: 4px;
     text-transform: uppercase;
     margin-bottom: 20px;
+    color: var(--white);
 }
 
 .about-section p {
     color: var(--white-50);
     line-height: 1.8;
     font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   CARD PRODOTTI (catalogo)
+   ============================================ */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 40px 0;
+}
+
+.product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+}
+
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: #1a1a1a;
+}
+
+.product-card .card-body {
+    padding: 16px;
+}
+
+.product-card .card-title {
+    font-family: 'Georgia', serif;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: var(--white);
+}
+
+.product-card .price {
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.product-card .category-badge {
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 20px;
+}
+
+.btn-add-cart {
+    background: none;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.btn-add-cart:hover {
+    background: var(--gold);
+    color: var(--black);
+}
+
+/* ============================================
+   OVERRIDE BOOTSTRAP — coerenza col tema scuro/oro
+   ============================================ */
+.btn-primary {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--gold-deep);
+    border-color: var(--gold-deep);
+    color: var(--black);
+}
+
+.btn-outline-primary {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+}
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.form-control,
+.form-select {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg-card);
+    border-color: var(--gold);
+    color: var(--text);
+    box-shadow: 0 0 0 0.2rem rgba(201, 168, 76, 0.25);
+}
+
+.input-group-text {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.text-primary {
+    color: var(--gold) !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--border) !important;
+    color: var(--white);
+}
+
+.breadcrumb-item a {
+    color: var(--text-muted);
+}
+
+.breadcrumb-item.active {
+    color: var(--white);
 }
 
 /* ============================================
    FOOTER
    ============================================ */
-.footer {
-    background: var(--dark);
-    padding: 40px 0 20px;
+footer {
+    background: var(--bg-card);
     border-top: 1px solid var(--border);
-    margin-top: 40px;
-}
-
-.footer-grid {
+    padding: 60px 40px 30px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    max-width: 800px;
+    grid-template-columns: 1.3fr repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
-.footer-grid h5 {
-    font-size: 0.7rem;
-    text-transform: uppercase;
+footer .logo {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 1.4rem;
     letter-spacing: 2px;
-    font-weight: 600;
     margin-bottom: 12px;
+}
+
+footer .tag {
+    color: var(--white-50);
+    font-size: 0.85rem;
+    max-width: 220px;
+    line-height: 1.6;
+}
+
+footer h4 {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer ul li {
+    margin-bottom: 10px;
+}
+
+footer ul li a {
+    color: var(--white-50);
+    font-size: 0.85rem;
+}
+
+footer ul li a:hover {
     color: var(--white);
 }
 
-.footer-grid ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-grid ul li {
-    margin-bottom: 6px;
-}
-
-.footer-grid ul li a {
-    color: var(--white-50);
-    font-size: 0.8rem;
-    transition: var(--transition);
-}
-
-.footer-grid ul li a:hover {
-    color: var(--gold);
-}
-
-.footer .social-icons {
-    display: flex;
-    gap: 14px;
-    font-size: 1.2rem;
-}
-
-.footer .social-icons a {
-    color: var(--white-50);
-    transition: var(--transition);
-}
-
-.footer .social-icons a:hover {
-    color: var(--gold);
-}
-
-.footer-bottom {
-    text-align: center;
+footer .bottom {
+    grid-column: 1 / -1;
+    margin-top: 30px;
     padding-top: 20px;
-    margin-top: 20px;
     border-top: 1px solid var(--border);
-    font-size: 0.65rem;
-    color: var(--white-50);
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
     letter-spacing: 1px;
+    color: var(--text-muted);
 }
 
 /* ============================================
@@ -486,36 +605,44 @@ a:hover {
         font-size: 1.2rem;
         letter-spacing: 3px;
     }
-    .nav-top .nav-icons {
-        gap: 12px;
+    .nav-menu ul {
+        gap: 16px;
+        flex-wrap: wrap;
     }
-    .nav-menu {
-        display: none !important;
+    .nav-menu ul li a {
+        font-size: 0.6rem;
+    }
+    .hero {
+        padding: 50px 16px;
     }
     .hero h1 {
-        font-size: 2rem;
-        letter-spacing: 4px;
+        font-size: 1.6rem;
+        letter-spacing: 3px;
+    }
+    .hero p {
+        font-size: 0.9rem;
     }
     .section-title {
-        font-size: 1.4rem;
-        letter-spacing: 4px;
+        font-size: 1.3rem;
+        letter-spacing: 3px;
         margin: 40px 0 20px;
+    }
+    .quote-section p {
+        font-size: 1.2rem;
+    }
+    .bestseller-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
     }
     .carousel-item {
         min-width: 50%;
     }
-    .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        text-align: center;
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
-    .footer .social-icons {
-        justify-content: center;
-    }
-}
-
-@media (min-width: 769px) {
-    .nav-menu {
-        display: block !important;
+    footer {
+        grid-template-columns: 1fr 1fr;
+        padding: 40px 20px 24px;
     }
 }
