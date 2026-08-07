@@ -7,18 +7,20 @@
 
     <main class="container py-4" th:fragment="content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>🛍️ Catalogo Prodotti</h1>
-            <a th:href="@{/prodotti/admin/new}" class="btn btn-success" sec:authorize="hasAuthority('ADMIN')">
-                ➕ Nuovo prodotto
+            <h1><i class="fas fa-store"></i> Catalogo Prodotti</h1>
+            <a th:href="@{/prodotti/admin/new}" class="btn btn-primary" sec:authorize="hasAuthority('ADMIN')">
+                <i class="fas fa-plus"></i> Nuovo prodotto
             </a>
         </div>
 
-        <!-- Barra di ricerca e filtri -->
-        <div class="card p-3 mb-4">
+        <!-- Ricerca -->
+        <div class="card p-3 mb-4 shadow-sm">
             <form th:action="@{/prodotti}" method="get" class="row g-3">
-                <div class="col-md-5">
-                    <input type="text" name="search" class="form-control" placeholder="🔍 Cerca prodotto..."
-                           th:value="${searchTerm}">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Cerca prodotto..." th:value="${searchTerm}">
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <select name="categoria" class="form-select">
@@ -30,28 +32,32 @@
                         </option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">🔍 Cerca</button>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Cerca</button>
                 </div>
             </form>
         </div>
 
         <!-- Lista prodotti -->
         <div th:if="${prodotti != null && !prodotti.isEmpty()}">
-            <div class="row g-4">
-                <div class="col-md-3" th:each="prodotto : ${prodotti}">
-                    <div class="card h-100 product-card">
-                        <img th:src="${prodotto.urlImage != null ? prodotto.urlImage : '/images/placeholder.jpg'}"
-                             class="card-img-top" th:alt="${prodotto.nome}" style="height: 200px; object-fit: cover;">
-                        <div class="card-body">
-                            <h6 class="card-title" th:text="${prodotto.nome}">Nome</h6>
-                            <p class="card-text text-primary fw-bold" th:text="'€' + ${prodotto.prezzo}">€19.99</p>
-                            <span class="badge bg-secondary" th:text="${prodotto.categoria != null ? prodotto.categoria.nome : 'Senza categoria'}">Categoria</span>
-                            <div class="mt-2 d-flex gap-2">
-                                <a th:href="@{/prodotti/{id}(id=${prodotto.id})}" class="btn btn-outline-primary btn-sm flex-grow-1">Dettaglio</a>
+            <div class="product-grid">
+                <div class="product-card" th:each="prodotto : ${prodotti}">
+                    <img th:src="${prodotto.urlImage != null ? prodotto.urlImage : '/images/placeholder.jpg'}"
+                         th:alt="${prodotto.nome}">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${prodotto.nome}">Nome</h5>
+                        <span class="price" th:text="'€' + ${prodotto.prezzo}">€19.99</span>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="category-badge" th:text="${prodotto.categoria != null ? prodotto.categoria.nome : 'Generico'}">Categoria</span>
+                            <div class="d-flex gap-1">
+                                <a th:href="@{/prodotti/{id}(id=${prodotto.id})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <form th:action="@{/carrello/add/{id}(id=${prodotto.id})}" method="post" class="d-inline" sec:authorize="isAuthenticated()">
                                     <input type="hidden" name="quantita" value="1">
-                                    <button type="submit" class="btn btn-primary btn-sm">🛒</button>
+                                    <button type="submit" class="btn-add-cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -61,8 +67,9 @@
         </div>
         <div th:if="${prodotti == null || prodotti.isEmpty()}">
             <div class="text-center py-5">
-                <p class="text-muted">Nessun prodotto trovato.</p>
-                <a th:href="@{/prodotti}" class="btn btn-outline-primary">Mostra tutti i prodotti</a>
+                <i class="fas fa-box-open text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">Nessun prodotto trovato.</p>
+                <a th:href="@{/prodotti}" class="btn btn-outline-primary"><i class="fas fa-undo"></i> Mostra tutti</a>
             </div>
         </div>
     </main>
