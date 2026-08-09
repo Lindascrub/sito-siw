@@ -93,7 +93,7 @@
                     </div>
 
                     <!-- ADMIN: Pulsanti di modifica -->
-                    <div class="mt-4" sec:authorize="hasAuthority('ADMIN')">
+                    <div class="mt-4" sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/prodotti/admin/edit/{id}(id=${prodotto.id})}" class="btn btn-warning">✏️ Modifica</a>
                         <a th:href="@{/prodotti/admin/disable/{id}(id=${prodotto.id})}" class="btn btn-danger"
                            th:if="${prodotto.attivo}">🚫 Disattiva</a>

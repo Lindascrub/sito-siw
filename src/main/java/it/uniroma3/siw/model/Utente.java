@@ -133,9 +133,8 @@ public class Utente {
 		this.indirizzo = indirizzo;
 	}
 
-	public void setCredenziali(Credenziali credenziali2) {
-		// TODO Auto-generated method stub
-		
+	public void setCredenziali(Credenziali credenziali) {
+		this.credenziali = credenziali;
 	}
    
 }

@@ -59,6 +59,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 //  Risorse pubbliche
+                .requestMatchers("/prodotti/admin/**", "/categorie/admin/**").hasRole(Credenziali.ADMIN_ROLE)
                 .requestMatchers("/", "/index", "/prodotti", "/prodotti/**", 
                                 "/categorie", "/css/**", "/images/**", "/js/**").permitAll()
                 .requestMatchers("/register", "/registration-success", "/login", 

@@ -1,52 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>I miei ordini - IntimoStore</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
-</head>
+<head th:replace="fragments/base :: head(title='Checkout')"></head>
 <body>
-    <!-- HEADER IMPORTATO -->
-    <header th:replace="~{fragments/header :: header}"></header>
-	<div th:replace="~{fragments/messages :: messages}"></div>
-    <!-- CONTENUTO -->
-    <main>
-        <h2>I tuoi ordini</h2>
-        
-        <div th:if="${param.success}" class="success-message">Ordine creato con successo!</div>
-        
-        <div th:if="${ordini.isEmpty()}" class="nessun-ordine">
-            <p>Non hai ancora effettuato ordini.</p>
-            <a th:href="@{/prodotti}" class="btn-primary">Vai al catalogo</a>
-        </div>
-        
-        <div th:unless="${ordini.isEmpty()}">
-            <table class="ordini-table">
-                <thead>
-                    <tr>
-                        <th>ID Ordine</th>
-                        <th>Data</th>
-                        <th>Totale</th>
-                        <th>Stato</th>
-                        <th>Azioni</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="o : ${ordini}">
-                        <td th:text="'#' + ${o.id}">#1</td>
-                        <td th:text="${#temporals.format(o.dataCreazione, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
-                        <td th:text="'€ ' + ${o.totale}">€ 0.00</td>
-                        <td th:text="${o.stato}">CREATO</td>
-                        <td>
-                            <a th:href="@{/ordini/} + ${o.id}" class="btn-edit">👁️ Dettaglio</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+
+    <header th:replace="fragments/base :: navbar"></header>
+
+    <main class="container py-4" th:fragment="content">
+        <h1>📦 Checkout</h1>
+
+        <div th:if="${errore}" class="alert alert-danger" th:text="${errore}">Errore</div>
+
+        <div class="row g-4">
+            <!-- Riepilogo ordine -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Riepilogo ordine</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="riga : ${carrello.getRighe()}" class="d-flex justify-content-between border-bottom py-1">
+                            <span th:text="${riga.prodotto.nome} + ' x' + ${riga.quantita}">Prodotto x2</span>
+                            <span th:text="'€' + ${riga.getSubtotale()}">€39.98</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold mt-2">
+                            <span>Totale:</span>
+                            <span th:text="'€' + ${carrello.getTotale()}">€0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dati di spedizione -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Dati di spedizione</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/ordini/checkout}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Indirizzo *</label>
+                                <input type="text" name="indirizzo" class="form-control" required
+                                       th:value="${utente.indirizzo}" placeholder="Via Roma, 123">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Città *</label>
+                                <input type="text" name="citta" class="form-control" required placeholder="Roma">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CAP *</label>
+                                <input type="text" name="cap" class="form-control" required placeholder="00100">
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">✅ Conferma ordine</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 IntimoStore - Progetto SIW</p>
-    </footer>
+    <footer th:replace="fragments/base :: footer"></footer>
+
 </body>
 </html>

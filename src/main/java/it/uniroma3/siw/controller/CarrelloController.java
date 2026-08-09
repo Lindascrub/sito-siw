@@ -38,7 +38,7 @@ public class CarrelloController {
     private Utente getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        return utenteService.findByEmail(username);
+        return utenteService.getUtenteByUsername(username);
     }
     
     // =============================================

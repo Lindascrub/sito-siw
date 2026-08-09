@@ -13,17 +13,17 @@
                         <h4 class="mb-0" th:text="${prodotto.id == null ? '➕ Nuovo Prodotto' : '✏️ Modifica Prodotto'}">Nuovo Prodotto</h4>
                     </div>
                     <div class="card-body">
-                        
-                        <!-- Messaggi di errore globali -->
-                        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
-                            <ul class="mb-0">
-                                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Errore</li>
-                            </ul>
-                        </div>
 
-                        <form th:action="${prodotto.id == null ? @{/prodotti/admin/new} : @{/prodotti/admin/edit/{id}(id=${prodotto.id})}}" 
+                        <form th:action="${prodotto.id == null} ? @{/prodotti/admin/new} : @{/prodotti/admin/edit/{id}(id=${prodotto.id})}" 
                               method="post" 
                               th:object="${prodotto}">
+
+                            <!-- Messaggi di errore globali -->
+                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                                <ul class="mb-0">
+                                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Errore</li>
+                                </ul>
+                            </div>
 
                             <!-- NOME -->
                             <div class="mb-3">

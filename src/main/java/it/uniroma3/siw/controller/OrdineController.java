@@ -10,6 +10,8 @@ import it.uniroma3.siw.service.OrdineService;
 import it.uniroma3.siw.service.UtenteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +38,9 @@ public class OrdineController {
     }
     
     private Utente getCurrentUser() {
-        // Per ora, assumiamo utente 1L (poi con Spring Security)
-        return utenteService.findById(1L);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return utenteService.getUtenteByUsername(username);
     }
     
     // =============================================
@@ -115,7 +118,7 @@ public class OrdineController {
         Utente utente = getCurrentUser();
         List<Ordine> ordini = ordineService.trovaPerUtente(utente.getId());
         model.addAttribute("ordini", ordini);
-        return "ordini/history";
+        return "ordini/storico";
     }
     
     @GetMapping("/{id}")
