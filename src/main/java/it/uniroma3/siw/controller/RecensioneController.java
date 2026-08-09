@@ -2,14 +2,13 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Recensione;
 import it.uniroma3.siw.model.Utente;
+import it.uniroma3.siw.security.AuthenticationHelper;
 import it.uniroma3.siw.service.ProdottoService;
 import it.uniroma3.siw.service.RecensioneService;
 import it.uniroma3.siw.service.UtenteService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,20 +23,21 @@ public class RecensioneController {
 	    private final RecensioneService recensioneService;
 	    private final UtenteService utenteService;
 	    private final ProdottoService prodottoService;  // ← AGGIUNGI!
+	    private final AuthenticationHelper authenticationHelper;
   
 
 
     public RecensioneController(RecensioneService recensioneService,
             UtenteService utenteService,
-            ProdottoService prodottoService) {  // ← AGGIUNGI!
+            ProdottoService prodottoService,
+            AuthenticationHelper authenticationHelper) {
 this.recensioneService = recensioneService;
 this.utenteService = utenteService;
 this.prodottoService = prodottoService;  // ← AGGIUNGI!
+this.authenticationHelper = authenticationHelper;
 }
     private Utente getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        return utenteService.findByEmail(username);
+        return authenticationHelper.getCurrentUser();
     }
     
     // =============================================

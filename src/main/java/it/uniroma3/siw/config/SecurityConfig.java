@@ -1,6 +1,7 @@
 package it.uniroma3.siw.config;
 
 import it.uniroma3.siw.model.Credenziali;
+import it.uniroma3.siw.security.OAuth2SuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,7 +42,7 @@ public class SecurityConfig {
         return manager;
     }
 
-    //  HANDLER PER LOGIN SUCCESS (anche OAuth2)
+    //  HANDLER PER LOGIN SUCCESS (form login classico)
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         return new AuthenticationSuccessHandler() {
@@ -55,13 +56,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, OAuth2SuccessHandler oauth2SuccessHandler) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 //  Risorse pubbliche
                 .requestMatchers("/prodotti/admin/**", "/categorie/admin/**").hasRole(Credenziali.ADMIN_ROLE)
                 .requestMatchers("/", "/index", "/prodotti", "/prodotti/**", 
-                                "/categorie", "/css/**", "/images/**", "/js/**").permitAll()
+                                "/categorie","/assistenza-clienti","/assistenza-clienti/**", "/css/**", "/images/**", "/js/**").permitAll()
                 .requestMatchers("/register", "/registration-success", "/login", 
                                 "/oauth2/**").permitAll()
                 // Solo ADMIN
@@ -73,9 +74,8 @@ public class SecurityConfig {
             //  OAuth2 Login (Google)
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
-                .defaultSuccessUrl("/oauth2/success", true)
+                .successHandler(oauth2SuccessHandler)
                 .failureUrl("/login?error=true")
-                .successHandler(successHandler())
                 .permitAll()
             )
             // Form Login

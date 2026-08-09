@@ -2,13 +2,12 @@ package it.uniroma3.siw.controller;
 
 import it.uniroma3.siw.model.Carrello;
 import it.uniroma3.siw.model.Utente;
+import it.uniroma3.siw.security.AuthenticationHelper;
 import it.uniroma3.siw.service.CarrelloService;
 import it.uniroma3.siw.service.ProdottoService;
 import it.uniroma3.siw.service.UtenteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +21,16 @@ public class CarrelloController {
     private final CarrelloService carrelloService;
     private final ProdottoService prodottoService;
     private final UtenteService utenteService;
+    private final AuthenticationHelper authenticationHelper;
     
     public CarrelloController(CarrelloService carrelloService,
                               ProdottoService prodottoService,
-                              UtenteService utenteService) {
+                              UtenteService utenteService,
+                              AuthenticationHelper authenticationHelper) {
         this.carrelloService = carrelloService;
         this.prodottoService = prodottoService;
         this.utenteService = utenteService;
+        this.authenticationHelper = authenticationHelper;
     }
     
     // =============================================
@@ -36,9 +38,7 @@ public class CarrelloController {
     // =============================================
     
     private Utente getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        return utenteService.getUtenteByUsername(username);
+        return authenticationHelper.getCurrentUser();
     }
     
     // =============================================

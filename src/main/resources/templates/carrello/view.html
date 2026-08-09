@@ -29,33 +29,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Dati di spedizione -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Dati di spedizione</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/ordini/checkout}" method="post">
-                            <div class="mb-3">
-                                <label class="form-label">Indirizzo *</label>
-                                <input type="text" name="indirizzo" class="form-control" required placeholder="Via Roma, 123">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Città *</label>
-                                <input type="text" name="citta" class="form-control" required placeholder="Roma">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">CAP *</label>
-                                <input type="text" name="cap" class="form-control" required placeholder="00100">
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">✅ Conferma ordine</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+	
+			<a th:href="@{/prodotti}" class="btn btn-primary">🛍️ Continua lo shopping</a>
+			<a th:href="@{/carrello/checkout}" class="btn btn-primary">checkout</a>
     </main>
 
     <footer th:replace="fragments/base :: footer"></footer>

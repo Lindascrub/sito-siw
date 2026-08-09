@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/base :: head(title='I miei preferiti')"></head>
+<body>
+
+    <header th:replace="fragments/base :: navbar"></header>
+
+    <main class="container py-4" th:fragment="content">
+        <h1><i class="fas fa-heart"></i> I miei preferiti</h1>
+
+        <div th:if="${preferiti == null || preferiti.isEmpty()}" class="text-center py-5">
+            <i class="fas fa-heart-crack text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3">Non hai ancora aggiunto prodotti ai preferiti.</p>
+            <a th:href="@{/prodotti}" class="btn btn-outline-primary">Vai al catalogo</a>
+        </div>
+
+        <div th:if="${preferiti != null && !preferiti.isEmpty()}" class="product-grid">
+            <div class="product-card" th:each="prodotto : ${preferiti}">
+                <img th:src="${prodotto.urlImage != null ? prodotto.urlImage : '/images/placeholder.jpg'}"
+                     th:alt="${prodotto.nome}">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${prodotto.nome}">Nome</h5>
+                    <span class="price" th:text="'€' + ${prodotto.prezzo}">€19.99</span>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="category-badge" th:text="${prodotto.categoria != null ? prodotto.categoria.nome : 'Generico'}">Categoria</span>
+                        <div class="d-flex gap-1">
+                            <a th:href="@{/prodotti/{id}(id=${prodotto.id})}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <form th:action="@{/preferiti/toggle/{id}(id=${prodotto.id})}" method="post" class="d-inline">
+                                <input type="hidden" name="redirect" th:value="@{/preferiti}">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Rimuovi dai preferiti">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="fragments/base :: footer"></footer>
+
+</body>
+</html>

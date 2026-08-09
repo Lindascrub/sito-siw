@@ -1,7 +1,9 @@
 package it.uniroma3.siw.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,6 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -55,6 +59,22 @@ public class Utente {
     
     @OneToMany(mappedBy = "utente")
     private List<Ordine> ordini = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "utente_preferiti",
+        joinColumns = @JoinColumn(name = "utente_id"),
+        inverseJoinColumns = @JoinColumn(name = "prodotto_id")
+    )
+    private Set<Prodotto> preferiti = new HashSet<>();
+
+    public Set<Prodotto> getPreferiti() {
+        return preferiti;
+    }
+
+    public void setPreferiti(Set<Prodotto> preferiti) {
+        this.preferiti = preferiti;
+    }
 
 	public Long getId() {
 		return id;

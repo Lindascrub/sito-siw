@@ -5,13 +5,12 @@ import it.uniroma3.siw.model.Carrello;
 import it.uniroma3.siw.model.Ordine;
 import it.uniroma3.siw.model.RigaCarrello;
 import it.uniroma3.siw.model.Utente;
+import it.uniroma3.siw.security.AuthenticationHelper;
 import it.uniroma3.siw.service.CarrelloService;
 import it.uniroma3.siw.service.OrdineService;
 import it.uniroma3.siw.service.UtenteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,19 +27,20 @@ public class OrdineController {
     private final OrdineService ordineService;
     private final CarrelloService carrelloService;
     private final UtenteService utenteService;
+    private final AuthenticationHelper authenticationHelper;
     
     public OrdineController(OrdineService ordineService,
                             CarrelloService carrelloService,
-                            UtenteService utenteService) {
+                            UtenteService utenteService,
+                            AuthenticationHelper authenticationHelper) {
         this.ordineService = ordineService;
         this.carrelloService = carrelloService;
         this.utenteService = utenteService;
+        this.authenticationHelper = authenticationHelper;
     }
     
     private Utente getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        return utenteService.getUtenteByUsername(username);
+        return authenticationHelper.getCurrentUser();
     }
     
     // =============================================
@@ -54,6 +54,15 @@ public class OrdineController {
         
         if (carrello.getRighe().isEmpty()) {
             return "redirect:/carrello";
+        }
+        
+        // Pre-compila l'indirizzo dall'ultimo ordine effettuato, se esiste
+        List<Ordine> ordiniPrecedenti = ordineService.trovaPerUtente(utente.getId());
+        if (!ordiniPrecedenti.isEmpty()) {
+            Ordine ultimo = ordiniPrecedenti.get(0);
+            model.addAttribute("ultimoIndirizzo", ultimo.getIndirizzoSpedizione());
+            model.addAttribute("ultimaCitta", ultimo.getCittaSpedizione());
+            model.addAttribute("ultimoCap", ultimo.getCodPostaleSpedizione());
         }
         
         model.addAttribute("carrello", carrello);

@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Prodotti</h5>
                         <p class="card-text">Gestisci il catalogo prodotti</p>
-                        <a th:href="@{/prodotti}" class="btn btn-primary">Vai</a>
+                        <a th:href="@{/admin/prodotti}" class="btn btn-primary">Vai</a>
                     </div>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Categorie</h5>
                         <p class="card-text">Gestisci le categorie</p>
-                        <a th:href="@{/categorie/admin}" class="btn btn-primary">Vai</a>
+                        <a th:href="@{/admin/categorie}" class="btn btn-primary">Vai</a>
                     </div>
                 </div>
             </div>
@@ -42,39 +42,7 @@
             </div>
         </div>
 
-        <!-- Ordini recenti -->
-        <h3 class="mt-5">Ordini in attesa</h3>
-        <div th:if="${ordiniRecent != null && !ordiniRecent.isEmpty()}">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Utente</th>
-                            <th>Data</th>
-                            <th>Totale</th>
-                            <th>Stato</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="ordine : ${ordiniRecent}">
-                            <td th:text="${ordine.id}">1</td>
-                            <td th:text="${ordine.utente != null ? ordine.utente.email : 'N/A'}">email@test.com</td>
-                            <td th:text="${#temporals.format(ordine.dataOrdine, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
-                            <td th:text="'€' + ${ordine.totale}">€0.00</td>
-                            <td><span class="badge bg-warning" th:text="${ordine.stato}">CREATO</span></td>
-                            <td>
-                                <a th:href="@{/ordini/{id}(id=${ordine.id})}" class="btn btn-sm btn-outline-primary">📄</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <p th:if="${ordiniRecent == null || ordiniRecent.isEmpty()}" class="text-muted">
-            Nessun ordine in attesa.
-        </p>
+       
     </main>
 
     <footer th:replace="fragments/base :: footer"></footer>
