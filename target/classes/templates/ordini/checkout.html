@@ -17,7 +17,7 @@
 
         <div class="split">
 
-            <!-- Dati di spedizione -->
+			
             <div class="panel">
                 <h2 class="panel__head">Dati di spedizione</h2>
                 <form th:action="@{/ordini/checkout}" method="post" class="form-stack">
@@ -43,11 +43,11 @@
                 </form>
             </div>
 
-            <!-- Riepilogo -->
+            
             <div class="panel">
                 <h2 class="panel__head">Riepilogo ordine</h2>
                 <div th:each="riga : ${carrello.getRighe()}" class="panel__row">
-                    <span th:text="${riga.prodotto.nome} + ' × ' + ${riga.quantita}">Prodotto × 2</span>
+                    <span th:text="${riga.prodotto.nome} + ' pz ' + ${riga.quantita}">Prodotto pz 2</span>
                     <span th:text="'€' + ${riga.getSubtotale()}">€39,98</span>
                 </div>
                 <div class="panel__row panel__row--total">

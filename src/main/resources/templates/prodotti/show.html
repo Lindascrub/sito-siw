@@ -16,13 +16,6 @@
 
         <div th:if="${prodotto != null}">
 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/prodotti}">Collezione</a></li>
-                    <li class="breadcrumb-item active" th:text="${prodotto.nome}">Nome</li>
-                </ol>
-            </nav>
-
             <div class="product-detail">
 
                 <figure class="product-detail__media m-0">
@@ -87,17 +80,7 @@
                         </p>
                     </div>
 
-                    <!-- Admin -->
-                    <div class="spec" sec:authorize="hasRole('ADMIN')">
-                        <h5>Amministrazione</h5>
-                        <div class="form-actions">
-                            <a th:href="@{/prodotti/admin/edit/{id}(id=${prodotto.id})}" class="btn-line">Modifica</a>
-                            <a th:href="@{/prodotti/admin/disable/{id}(id=${prodotto.id})}" class="btn-line"
-                               th:if="${prodotto.attivo}">Disattiva</a>
-                            <a th:href="@{/prodotti/admin/enable/{id}(id=${prodotto.id})}" class="btn-line"
-                               th:unless="${prodotto.attivo}">Attiva</a>
-                        </div>
-                    </div>
+                  
                 </div>
             </div>
         </div>

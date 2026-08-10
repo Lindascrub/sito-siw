@@ -62,7 +62,7 @@ public class SecurityConfig {
                 //  Risorse pubbliche
                 .requestMatchers("/prodotti/admin/**", "/categorie/admin/**").hasRole(Credenziali.ADMIN_ROLE)
                 .requestMatchers("/", "/index", "/prodotti", "/prodotti/**", 
-                                "/categorie","/assistenza-clienti","/assistenza-clienti/**", "/css/**", "/images/**", "/js/**").permitAll()
+                                "/categorie","/assistenza-clienti", "/css/**", "/images/**", "/js/**").permitAll()
                 .requestMatchers("/register", "/registration-success", "/login", 
                                 "/oauth2/**").permitAll()
                 // Solo ADMIN

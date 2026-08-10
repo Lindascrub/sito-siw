@@ -9,12 +9,11 @@
     <main class="page">
 
         <div class="page-head">
-            <span class="eyebrow">Collezione &middot; Tutti i capi</span>
             <h1>Il catalogo</h1>
             <p>Poche referenze, tagli precisi, tessuti naturali. Filtra per categoria o cerca il capo che stai immaginando.</p>
         </div>
 
-        <!-- Filtri -->
+		
         <form th:action="@{/prodotti}" method="get" class="filter-bar">
             <div class="field">
                 <label class="form-label">Cerca</label>
@@ -65,7 +64,6 @@
         </div>
 
         <div th:if="${prodotti == null || prodotti.isEmpty()}" class="empty-state">
-            <i class="fas fa-box-open"></i>
             <p>Nessun capo corrisponde alla tua ricerca.</p>
             <a th:href="@{/prodotti}" class="btn-line">Mostra tutta la collezione</a>
         </div>

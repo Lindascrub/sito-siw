@@ -3,57 +3,40 @@
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} ? ${title} + ' — Intimi Lunna' : 'Intimi Lunna — Editorial Lingerie'">Intimi Lunna</title>
-    <meta name="description" content="Intimo editorial: pizzi, seta lavata e cuciture a mano. Coordinati, reggiseni, slip e loungewear.">
+    <title th:text="${title} ? ${title}">Lunna Lingerie</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-    <!-- ============================================ -->
-    <!-- NAVBAR (chiara, editoriale) -->
-    <!-- ============================================ -->
+
+	
     <nav class="nav-top" th:fragment="navbar">
         <div class="container">
             <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navMenu').classList.toggle('show')">
                 <span></span><span></span><span></span>
             </button>
-            <div class="logo"><a th:href="@{/}">Intimi <em>Lunna</em></a></div>
-            <form th:action="@{/prodotti}" method="get" class="nav-search" role="search">
-                <input type="text" name="search" placeholder="Cerca un capo..." aria-label="Cerca">
-                <button type="submit" aria-label="Cerca"><i class="fas fa-search"></i></button>
-            </form>
+            <div class="logo"><a th:href="@{/}">Lunna <em>Lingerie</em></a></div>
+        
             <div class="nav-icons">
                 <div class="dropdown" sec:authorize="isAuthenticated()">
-                    <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account">
-                        <i class="fas fa-user"></i>
-                    </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" th:href="@{/profilo}"><i class="fas fa-id-card"></i> Il mio profilo</a></li>
                         <li><a class="dropdown-item" th:href="@{/ordini/history}"><i class="fas fa-box"></i> I miei ordini</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form th:action="@{/logout}" method="post" class="m-0">
-                                <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Esci</button>
-                            </form>
-                        </li>
                     </ul>
                 </div>
                 <a th:href="@{/login}" sec:authorize="!isAuthenticated()" aria-label="Accedi"><i class="fas fa-user"></i></a>
                 <a th:href="@{/preferiti}" sec:authorize="isAuthenticated()" aria-label="Preferiti"><i class="fas fa-heart"></i></a>
-                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" aria-label="Preferiti"><i class="fas fa-heart"></i></a>
-                <a th:href="@{/carrello}" aria-label="Carrello">
-                    <i class="fas fa-shopping-bag"></i>
+                <a th:href="@{/carrello}" aria-label="Carrello"><i class="fas fa-shopping-bag"></i>
                     <span class="badge" th:text="${carrello != null ? carrello.getNumeroArticoli() : 0}">0</span>
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- ============================================ -->
-    <!-- MENU CATEGORIE -->
-    <!-- ============================================ -->
+
     <div class="nav-menu" id="navMenu" th:fragment="nav-menu">
         <ul>
             <li><a th:href="@{/prodotti}">Shop</a></li>
@@ -65,27 +48,23 @@
         </ul>
     </div>
 
-    <!-- ============================================ -->
-    <!-- CONTENUTO -->
-    <!-- ============================================ -->
+    
     <main th:fragment="content">
         <!-- Il contenuto specifico viene inserito qui -->
     </main>
 
-    <!-- ============================================ -->
-    <!-- FOOTER -->
-    <!-- ============================================ -->
+    
+	
     <footer th:fragment="footer">
       <div>
-        <div class="logo">Intimi <em>Lunna</em></div>
-        <p class="tag">Intimo editorial per chi indossa la propria intimità come una firma.</p>
+        <div class="logo">Lunna <em>Lingerie</em></div>
+        <p class="tag">L'intimo per chi indossa la propria intimità come una firma.</p>
       </div>
       <div>
         <h4>Negozio</h4>
         <ul>
           <li><a th:href="@{/prodotti}">Collezione</a></li>
           <li><a th:href="@{/prodotti}">Novità</a></li>
-          <li><a th:href="@{/prodotti}">Saldi</a></li>
         </ul>
       </div>
       <div>
@@ -96,17 +75,18 @@
           <li><a th:href="@{/ordini/history}">Traccia ordine</a></li>
         </ul>
       </div>
-      <div>
-        <h4>Seguici</h4>
-        <ul>
-          <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-          <li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li>
-          <li><a href="#"><i class="fab fa-tiktok"></i> TikTok</a></li>
-        </ul>
-      </div>
+	  <div>
+	      <h4>Seguici</h4>
+	      <ul>
+	          <li><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
+	          <li><a href="https://it.pinterest.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-pinterest"></i> Pinterest</a></li>
+	          <li><a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i> TikTok</a></li>
+	          <li><a href="https://www.wechat.com/it/" target="_blank" rel="noopener noreferrer"><i class="fab fa-wechat"></i> WeChat</a></li>
+	      </ul>
+	  </div>
       <div class="bottom">
         <span>© 2026 Intimi Lunna</span>
-        <span><a th:href="@{/assistenza-clienti/privacy}">Privacy — Termini</a></span>
+        <span><a th:href="@{/assistenza-clienti}">Privacy — Termini</a></span>
       </div>
     </footer>
 
