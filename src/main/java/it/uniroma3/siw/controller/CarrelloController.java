@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/carrello")
@@ -65,7 +66,8 @@ public class CarrelloController {
     public String addToCart(@PathVariable Long prodottoId,
                             @RequestParam(defaultValue = "1") Integer quantita,
                             @RequestParam(required = false) String taglia,
-                            @RequestParam(required = false) String colore) {
+                            @RequestParam(required = false) String colore,
+                            RedirectAttributes redirectAttributes) {
         
         Utente utente = getCurrentUser();
         
@@ -74,9 +76,25 @@ public class CarrelloController {
             logger.info("Prodotto {} aggiunto al carrello", prodottoId);
         } catch (RuntimeException e) {
             logger.error("Errore aggiunta al carrello: {}", e.getMessage());
-            // TODO: Aggiungere messaggio di errore alla sessione
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
         }
         
+        return "redirect:/carrello";
+    }
+    
+    // =============================================
+    // 🔹 AGGIORNA QUANTITÀ NEL CARRELLO
+    // =============================================
+    
+    @PostMapping("/update/{prodottoId}")
+    public String updateQuantity(@PathVariable Long prodottoId,
+                                 @RequestParam Integer quantita) {
+        Utente utente = getCurrentUser();
+        try {
+            carrelloService.aggiornaQuantita(utente.getId(), prodottoId, quantita);
+        } catch (RuntimeException e) {
+            logger.error("Errore aggiornamento quantità: {}", e.getMessage());
+        }
         return "redirect:/carrello";
     }
     
@@ -100,5 +118,15 @@ public class CarrelloController {
         Utente utente = getCurrentUser();
         carrelloService.svuotaCarrello(utente.getId());
         return "redirect:/carrello";
+    }
+
+    // =============================================
+    // 🔹 COMPATIBILITÀ: redirect al vero checkout
+    // (alcuni link salvati puntavano qui per errore)
+    // =============================================
+
+    @GetMapping("/checkout")
+    public String redirectToCheckout() {
+        return "redirect:/ordini/checkout";
     }
 }

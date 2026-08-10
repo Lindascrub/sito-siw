@@ -56,14 +56,27 @@ public class OrdineController {
             return "redirect:/carrello";
         }
         
-        // Pre-compila l'indirizzo dall'ultimo ordine effettuato, se esiste
+        // Pre-compila l'indirizzo: priorità ai dati salvati nel profilo,
+        // altrimenti (se mancanti) usa l'ultimo ordine effettuato.
         List<Ordine> ordiniPrecedenti = ordineService.trovaPerUtente(utente.getId());
+        String indirizzoDefault = utente.getIndirizzo();
+        String cittaDefault = utente.getCitta();
+        String capDefault = utente.getCap();
         if (!ordiniPrecedenti.isEmpty()) {
             Ordine ultimo = ordiniPrecedenti.get(0);
-            model.addAttribute("ultimoIndirizzo", ultimo.getIndirizzoSpedizione());
-            model.addAttribute("ultimaCitta", ultimo.getCittaSpedizione());
-            model.addAttribute("ultimoCap", ultimo.getCodPostaleSpedizione());
+            if (indirizzoDefault == null || indirizzoDefault.isBlank()) {
+                indirizzoDefault = ultimo.getIndirizzoSpedizione();
+            }
+            if (cittaDefault == null || cittaDefault.isBlank()) {
+                cittaDefault = ultimo.getCittaSpedizione();
+            }
+            if (capDefault == null || capDefault.isBlank()) {
+                capDefault = ultimo.getCodPostaleSpedizione();
+            }
         }
+        model.addAttribute("ultimoIndirizzo", indirizzoDefault);
+        model.addAttribute("ultimaCitta", cittaDefault);
+        model.addAttribute("ultimoCap", capDefault);
         
         model.addAttribute("carrello", carrello);
         model.addAttribute("utente", utente);
@@ -106,6 +119,13 @@ public class OrdineController {
             
             // Svuota il carrello
             carrelloService.svuotaCarrello(utente.getId());
+
+            // Ricorda i dati di spedizione nel profilo, così la prossima
+            // volta (anche la primissima) non serve reinserirli.
+            utente.setIndirizzo(indirizzo);
+            utente.setCitta(citta);
+            utente.setCap(cap);
+            utenteService.salvaUtente(utente);
             
             model.addAttribute("ordine", ordine);
             return "ordini/conferma";

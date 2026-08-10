@@ -31,12 +31,16 @@ public class ProfiloController {
                             @RequestParam String cognome,
                             @RequestParam(required = false) String telefono,
                             @RequestParam(required = false) String indirizzo,
+                            @RequestParam(required = false) String citta,
+                            @RequestParam(required = false) String cap,
                             RedirectAttributes redirectAttributes) {
         Utente utente = authenticationHelper.getCurrentUser();
         utente.setNome(nome);
         utente.setCognome(cognome);
         utente.setTelefono(telefono);
         utente.setIndirizzo(indirizzo);
+        utente.setCitta(citta);
+        utente.setCap(cap);
         utenteService.salvaUtente(utente);
         redirectAttributes.addFlashAttribute("successo", "Profilo aggiornato con successo!");
         return "redirect:/profilo";
