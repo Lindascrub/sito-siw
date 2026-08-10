@@ -2,6 +2,7 @@ package it.uniroma3.siw.service;
 
 import it.uniroma3.siw.model.Carrello;
 import it.uniroma3.siw.model.Prodotto;
+import it.uniroma3.siw.model.RigaCarrello;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.repository.CarrelloRepository;
 import org.slf4j.Logger;
@@ -48,6 +49,30 @@ public class CarrelloService {
         
         carrello.aggiungiProdotto(prodotto, quantita);
         logger.info("Aggiunto prodotto {} al carrello", prodotto.getNome());
+        return carrelloRepository.save(carrello);
+    }
+    
+    @Transactional
+    public Carrello aggiornaQuantita(Long utenteId, Long prodottoId, Integer nuovaQuantita) {
+        Carrello carrello = trovaPerUtente(utenteId);
+        Prodotto prodotto = prodottoService.findById(prodottoId);
+        
+        if (nuovaQuantita == null || nuovaQuantita <= 0) {
+            carrello.rimuoviProdotto(prodotto);
+            return carrelloRepository.save(carrello);
+        }
+        
+        if (prodotto.getQuantitaDisponibile() < nuovaQuantita) {
+            throw new RuntimeException("Stock insufficiente per: " + prodotto.getNome());
+        }
+        
+        for (RigaCarrello riga : carrello.getRighe()) {
+            if (riga.getProdotto().getId().equals(prodotto.getId())) {
+                riga.setQuantita(nuovaQuantita);
+                break;
+            }
+        }
+        logger.info("Quantità aggiornata per {}: {}", prodotto.getNome(), nuovaQuantita);
         return carrelloRepository.save(carrello);
     }
     

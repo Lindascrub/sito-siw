@@ -10,16 +10,78 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.uniroma3.siw.model.Prodotto;
 import it.uniroma3.siw.repository.ProdottoRepository;
+import it.uniroma3.siw.repository.RigaOrdineRepository;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 @Service
 public class ProdottoService {
     
     private ProdottoRepository prodottoRepository;
+    private final RigaOrdineRepository rigaOrdineRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProdottoService.class);
     
-    public ProdottoService(ProdottoRepository prodottoRepository) {
+    public ProdottoService(ProdottoRepository prodottoRepository, RigaOrdineRepository rigaOrdineRepository) {
         this.prodottoRepository = prodottoRepository;
+        this.rigaOrdineRepository = rigaOrdineRepository;
+    }
+
+    /**
+     * Restituisce i prodotti più venduti in base alle quantità realmente
+     * vendute (somma delle righe ordine), non più una lista fissa scelta a mano.
+     * Se non ci sono ancora vendite registrate, torna semplicemente ai
+     * prodotti disponibili più recenti, così la sezione non resta vuota.
+     */
+    @Transactional(readOnly = true)
+    public List<Prodotto> findBestSeller(int limite) {
+        logger.debug("Calcolo best seller in base alle vendite reali");
+        List<Object[]> venduti = rigaOrdineRepository.findProdottiPiuVenduti();
+
+        List<Prodotto> risultato = new ArrayList<>();
+        Set<Long> idAggiunti = new LinkedHashSet<>();
+        for (Object[] riga : venduti) {
+            Long prodottoId = (Long) riga[0];
+            prodottoRepository.findById(prodottoId)
+                .filter(p -> Boolean.TRUE.equals(p.getAttivo()))
+                .ifPresent(p -> {
+                    if (idAggiunti.add(p.getId())) {
+                        risultato.add(p);
+                    }
+                });
+            if (risultato.size() >= limite) {
+                break;
+            }
+        }
+
+        // Se non ci sono ancora abbastanza vendite, completa con i prodotti disponibili
+        if (risultato.size() < limite) {
+            for (Prodotto p : findAllDisponibili()) {
+                if (idAggiunti.add(p.getId())) {
+                    risultato.add(p);
+                }
+                if (risultato.size() >= limite) {
+                    break;
+                }
+            }
+        }
+        return risultato;
+    }
+
+    /**
+     * Ultimi prodotti aggiunti al catalogo (in base all'id, che è
+     * progressivo), con immagine reale del prodotto.
+     */
+    @Transactional(readOnly = true)
+    public List<Prodotto> findUltimiArrivi(int limite) {
+        logger.debug("Recupero ultimi arrivi");
+        return findAllAttivi().stream()
+            .sorted(Comparator.comparing(Prodotto::getId).reversed())
+            .limit(limite)
+            .toList();
     }
     
     @Transactional(readOnly = true)
