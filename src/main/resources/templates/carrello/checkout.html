@@ -1,26 +1,22 @@
-
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Dati di spedizione</h5>
-            </div>
-            <div class="card-body">
-                <form th:action="@{/ordini/checkout}" method="post">
-                    <div class="mb-3">
-                        <label class="form-label">Indirizzo *</label>
-                        <input type="text" name="indirizzo" class="form-control" required placeholder="Via Roma, 123">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Città *</label>
-                        <input type="text" name="citta" class="form-control" required placeholder="Roma">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">CAP *</label>
-                        <input type="text" name="cap" class="form-control" required placeholder="00100">
-					  <button type="submit" class="btn btn-success w-100">✅ Conferma ordine</button>
-                    </div>
-                </form>
-            </div>
+<!-- Frammento: form dati di spedizione (checkout carrello) -->
+<div class="panel">
+    <h2 class="panel__head">Dati di spedizione</h2>
+    <form th:action="@{/ordini/checkout}" method="post" class="form-stack"
+          xmlns:th="http://www.thymeleaf.org">
+        <div class="field">
+            <label>Indirizzo *</label>
+            <input type="text" name="indirizzo" class="form-control" required placeholder="Via Roma, 123">
         </div>
-    </div>
+        <div class="field">
+            <label>Città *</label>
+            <input type="text" name="citta" class="form-control" required placeholder="Roma">
+        </div>
+        <div class="field">
+            <label>CAP *</label>
+            <input type="text" name="cap" class="form-control" required placeholder="00100">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-solid">Conferma ordine</button>
+        </div>
+    </form>
 </div>

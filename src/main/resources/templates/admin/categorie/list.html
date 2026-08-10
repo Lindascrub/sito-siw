@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/base :: head(title='Gestione Categorie')"></head>
+<head th:replace="~{fragments/base :: head(title='Gestione categorie')}"></head>
 <body>
 
-    <header th:replace="fragments/base :: navbar"></header>
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: nav-menu}"></div>
 
-    <main class="container py-4" th:fragment="content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>📂 Gestione Categorie</h1>
-            <a th:href="@{/categorie/admin/new}" class="btn btn-success">➕ Nuova Categoria</a>
+    <main class="page">
+
+        <div class="page-head">
+            <span class="eyebrow">Backoffice</span>
+            <h1>Gestione categorie</h1>
         </div>
 
-        <div th:if="${categorie != null && !categorie.isEmpty()}">
+        <div class="form-actions" style="margin-bottom: 32px;">
+            <a th:href="@{/categorie/admin/new}" class="btn-solid">Nuova categoria</a>
+            <a th:href="@{/admin}" class="btn-line">Dashboard</a>
+        </div>
+
+        <div th:if="${categorie != null && !categorie.isEmpty()}" class="panel">
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table mb-0 align-middle">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nome</th>
                             <th>Descrizione</th>
                             <th>Prodotti</th>
-                            <th>Azioni</th>
+                            <th class="text-end">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,29 +35,28 @@
                             <td th:text="${cat.id}">1</td>
                             <td th:text="${cat.nome}">Intimo</td>
                             <td th:text="${cat.descrizione}">Abbigliamento intimo</td>
-                            <td>
-                                <span class="badge bg-secondary" th:text="${cat.prodotti != null ? cat.prodotti.size() : 0}">5</span>
-                            </td>
-                            <td>
-                                <a th:href="@{/categorie/admin/edit/{id}(id=${cat.id})}" class="btn btn-sm btn-warning">✏️</a>
-                                <a th:href="@{/categorie/admin/delete/{id}(id=${cat.id})}" 
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Sei sicuro di voler eliminare questa categoria?')">🗑️</a>
+                            <td><span class="category-badge" th:text="${cat.prodotti != null ? cat.prodotti.size() : 0}">5</span></td>
+                            <td class="text-end">
+                                <a th:href="@{/categorie/admin/edit/{id}(id=${cat.id})}" class="btn btn-sm btn-outline-primary">Modifica</a>
+                                <a th:href="@{/categorie/admin/delete/{id}(id=${cat.id})}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Sei sicuro di voler eliminare questa categoria?')">Elimina</a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div th:if="${categorie == null || categorie.isEmpty()}">
-            <div class="text-center py-5">
-                <p class="text-muted">Nessuna categoria presente.</p>
-                <a th:href="@{/categorie/admin/new}" class="btn btn-primary">➕ Crea la prima categoria</a>
-            </div>
+
+        <div th:if="${categorie == null || categorie.isEmpty()}" class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>Nessuna categoria presente.</p>
+            <a th:href="@{/categorie/admin/new}" class="btn-solid">Crea la prima categoria</a>
         </div>
+
     </main>
 
-    <footer th:replace="fragments/base :: footer"></footer>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
 
 </body>
 </html>

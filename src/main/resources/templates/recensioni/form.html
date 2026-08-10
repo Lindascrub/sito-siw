@@ -1,72 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/base :: head(title='Nuova Recensione')"></head>
+<head th:replace="~{fragments/base :: head(title='Nuova recensione')}"></head>
 <body>
 
-    <header th:replace="fragments/base :: navbar"></header>
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: nav-menu}"></div>
 
-    <main class="container py-4" th:fragment="content">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-warning">
-                        <h4 class="mb-0">✍️ Scrivi una recensione</h4>
-                    </div>
-                    <div class="card-body">
-                        
-                        <div th:if="${errore}" class="alert alert-danger" th:text="${errore}">Errore</div>
-                        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
-                            <ul class="mb-0">
-                                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Errore</li>
-                            </ul>
-                        </div>
+    <main class="page page--tight">
 
-                        <form th:action="@{/recensioni/new/{id}(id=${recensione.prodotto.id})}" 
-                              method="post" 
-                              th:object="${recensione}">
-
-                            <p class="text-muted">
-                                Stai recensendo: <strong th:text="${recensione.prodotto.nome}">Prodotto</strong>
-                            </p>
-
-                            <!-- TITOLO -->
-                            <div class="mb-3">
-                                <label class="form-label">Titolo *</label>
-                                <input type="text" th:field="*{titolo}" class="form-control" required placeholder="Titolo della recensione">
-                                <span th:if="${#fields.hasErrors('titolo')}" th:errors="*{titolo}" class="text-danger small"></span>
-                            </div>
-
-                            <!-- TESTO -->
-                            <div class="mb-3">
-                                <label class="form-label">Recensione *</label>
-                                <textarea th:field="*{testo}" class="form-control" rows="4" required placeholder="La tua opinione sul prodotto..."></textarea>
-                                <span th:if="${#fields.hasErrors('testo')}" th:errors="*{testo}" class="text-danger small"></span>
-                            </div>
-
-                            <!-- VALUTAZIONE -->
-                            <div class="mb-3">
-                                <label class="form-label">Valutazione *</label>
-                                <div class="d-flex gap-3">
-                                    <div class="form-check" th:each="i : ${#numbers.sequence(1, 5)}">
-                                        <input type="radio" th:field="*{valutazione}" th:value="${i}" class="form-check-input">
-                                        <label class="form-check-label" th:text="${i} + '⭐'">1⭐</label>
-                                    </div>
-                                </div>
-                                <span th:if="${#fields.hasErrors('valutazione')}" th:errors="*{valutazione}" class="text-danger small"></span>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-warning">⭐ Invia recensione</button>
-                                <a th:href="@{/prodotti/{id}(id=${recensione.prodotto.id})}" class="btn btn-secondary">Annulla</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <div class="page-head">
+            <span class="eyebrow">La tua voce</span>
+            <h1>Scrivi una recensione</h1>
+            <p>Stai recensendo: <strong th:text="${recensione.prodotto.nome}">Prodotto</strong></p>
         </div>
+
+        <div class="panel">
+            <div th:if="${errore}" class="alert alert-danger" th:text="${errore}">Errore</div>
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                <ul class="mb-0">
+                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Errore</li>
+                </ul>
+            </div>
+
+            <form th:action="@{/recensioni/new/{id}(id=${recensione.prodotto.id})}"
+                  method="post"
+                  th:object="${recensione}"
+                  class="form-stack">
+
+                <div class="field">
+                    <label>Titolo *</label>
+                    <input type="text" th:field="*{titolo}" class="form-control" required placeholder="Titolo della recensione">
+                    <span th:if="${#fields.hasErrors('titolo')}" th:errors="*{titolo}" class="form-error"></span>
+                </div>
+
+                <div class="field">
+                    <label>Recensione *</label>
+                    <textarea th:field="*{testo}" class="form-control" rows="5" required placeholder="La tua opinione sul capo..."></textarea>
+                    <span th:if="${#fields.hasErrors('testo')}" th:errors="*{testo}" class="form-error"></span>
+                </div>
+
+                <div class="field">
+                    <label>Valutazione *</label>
+                    <div class="rating">
+                        <div class="form-check" th:each="i : ${#numbers.sequence(1, 5)}">
+                            <input type="radio" th:field="*{valutazione}" th:value="${i}" class="form-check-input">
+                            <label class="form-check-label" th:text="${i} + ' ★'">1 ★</label>
+                        </div>
+                    </div>
+                    <span th:if="${#fields.hasErrors('valutazione')}" th:errors="*{valutazione}" class="form-error"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-solid">Invia recensione</button>
+                    <a th:href="@{/prodotti/{id}(id=${recensione.prodotto.id})}" class="btn-line">Annulla</a>
+                </div>
+            </form>
+        </div>
+
     </main>
 
-    <footer th:replace="fragments/base :: footer"></footer>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
 
 </body>
 </html>
