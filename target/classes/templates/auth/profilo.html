@@ -1,56 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/base :: head(title='Il mio profilo')"></head>
+<head th:replace="~{fragments/base :: head(title='Il mio profilo')}"></head>
 <body>
 
-    <header th:replace="fragments/base :: navbar"></header>
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: nav-menu}"></div>
 
-    <main class="container py-4" th:fragment="content">
-        <h1><i class="fas fa-user"></i> Il mio profilo</h1>
+    <main class="page page--tight">
 
-        <div th:if="${successo}" class="alert alert-success" th:text="${successo}">Salvato!</div>
-
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="text-muted mb-3">
-                            <i class="fas fa-envelope"></i> <span th:text="${utente.email}">email@esempio.it</span>
-                        </p>
-                        <form th:action="@{/profilo}" method="post">
-                            <div class="mb-3">
-                                <label class="form-label">Nome *</label>
-                                <input type="text" name="nome" class="form-control" required th:value="${utente.nome}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Cognome *</label>
-                                <input type="text" name="cognome" class="form-control" required th:value="${utente.cognome}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Telefono</label>
-                                <input type="text" name="telefono" class="form-control" th:value="${utente.telefono}">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Indirizzo</label>
-                                <input type="text" name="indirizzo" class="form-control" th:value="${utente.indirizzo}">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">💾 Salva modifiche</button>
-                        </form>
-
-                        <hr>
-                        <div class="d-flex justify-content-between">
-                            <a th:href="@{/ordini/history}" class="btn btn-outline-secondary btn-sm">📋 I miei ordini</a>
-                            <form th:action="@{/logout}" method="post">
-                                <button type="submit" class="btn btn-outline-danger btn-sm">🚪 Esci</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="page-head">
+            <span class="eyebrow">Account</span>
+            <h1>Il mio profilo</h1>
+            <p th:text="${utente.email}">email@esempio.it</p>
         </div>
+
+        <div th:if="${successo}" class="alert" th:text="${successo}">Salvato!</div>
+
+        <div class="panel">
+            <form th:action="@{/profilo}" method="post" class="form-stack">
+                <div class="field">
+                    <label>Nome *</label>
+                    <input type="text" name="nome" class="form-control" required th:value="${utente.nome}">
+                </div>
+                <div class="field">
+                    <label>Cognome *</label>
+                    <input type="text" name="cognome" class="form-control" required th:value="${utente.cognome}">
+                </div>
+                <div class="field">
+                    <label>Telefono</label>
+                    <input type="text" name="telefono" class="form-control" th:value="${utente.telefono}">
+                </div>
+                <div class="field">
+                    <label>Indirizzo</label>
+                    <input type="text" name="indirizzo" class="form-control" th:value="${utente.indirizzo}">
+                </div>
+                <button type="submit" class="btn-solid w-100">Salva modifiche</button>
+            </form>
+        </div>
+
+        <div class="form-actions" style="margin-top: 28px; justify-content: space-between;">
+            <a th:href="@{/ordini/history}" class="btn-line">I miei ordini</a>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn-line">Esci</button>
+            </form>
+        </div>
+
     </main>
 
-    <footer th:replace="fragments/base :: footer"></footer>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
 
 </body>
 </html>

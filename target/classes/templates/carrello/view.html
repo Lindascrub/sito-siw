@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/base :: head(title='Checkout')"></head>
+<head th:replace="~{fragments/base :: head(title='La tua borsa')}"></head>
 <body>
 
-    <header th:replace="fragments/base :: navbar"></header>
+    <header th:replace="~{fragments/base :: navbar}"></header>
+    <div th:replace="~{fragments/base :: nav-menu}"></div>
 
-    <main class="container py-4" th:fragment="content">
-        <h1>Checkout</h1>
+    <main class="page page--narrow">
+
+        <div class="page-head">
+            <span class="eyebrow">Borsa</span>
+            <h1>Il tuo carrello</h1>
+        </div>
 
         <div th:if="${errore}" class="alert alert-danger" th:text="${errore}">Errore</div>
 
-        <div class="row g-4">
-            <!-- Riepilogo ordine -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Riepilogo ordine</h5>
-                    </div>
-                    <div class="card-body">
-                        <div th:each="riga : ${carrello.getRighe()}" class="d-flex justify-content-between border-bottom py-1">
-                            <span th:text="${riga.prodotto.nome} + ' x' + ${riga.quantita}">Prodotto x2</span>
-                            <span th:text="'€' + ${riga.getSubtotale()}">€39.98</span>
-                        </div>
-                        <div class="d-flex justify-content-between fw-bold mt-2">
-                            <span>Totale:</span>
-                            <span th:text="'€' + ${carrello.getTotale()}">€0.00</span>
-                        </div>
-                    </div>
+        <div th:if="${carrello == null || carrello.getRighe().isEmpty()}" class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <p>La tua borsa è ancora vuota.</p>
+            <a th:href="@{/prodotti}" class="btn-solid">Scopri la collezione</a>
+        </div>
+
+        <div th:if="${carrello != null && !carrello.getRighe().isEmpty()}">
+            <div class="panel">
+                <h2 class="panel__head">Riepilogo</h2>
+                <div th:each="riga : ${carrello.getRighe()}" class="panel__row">
+                    <span th:text="${riga.prodotto.nome} + ' × ' + ${riga.quantita}">Prodotto × 2</span>
+                    <span th:text="'€' + ${riga.getSubtotale()}">€39,98</span>
+                </div>
+                <div class="panel__row panel__row--total">
+                    <span>Totale</span>
+                    <span th:text="'€' + ${carrello.getTotale()}">€0,00</span>
                 </div>
             </div>
-	
-			<a th:href="@{/prodotti}" class="btn btn-primary">🛍️ Continua lo shopping</a>
-			<a th:href="@{/carrello/checkout}" class="btn btn-primary">checkout</a>
+
+            <div class="form-actions" style="margin-top: 32px;">
+                <a th:href="@{/carrello/checkout}" class="btn-solid">Procedi al checkout</a>
+                <a th:href="@{/prodotti}" class="btn-line">Continua lo shopping</a>
+            </div>
+        </div>
+
     </main>
 
-    <footer th:replace="fragments/base :: footer"></footer>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
 
 </body>
 </html>

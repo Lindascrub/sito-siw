@@ -1,33 +1,39 @@
+<!-- Frammento: tabella ordini in attesa (backoffice) -->
+<section xmlns:th="http://www.thymeleaf.org" style="margin-top: 56px;">
 
-<h3 class="mt-5">Ordini in attesa</h3>
-<div th:if="${ordiniRecent != null && !ordiniRecent.isEmpty()}">
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Utente</th>
-                    <th>Data</th>
-                    <th>Totale</th>
-                    <th>Stato</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="ordine : ${ordiniRecent}">
-                    <td th:text="${ordine.id}">1</td>
-                    <td th:text="${ordine.utente != null ? ordine.utente.email : 'N/A'}">email@test.com</td>
-                    <td th:text="${#temporals.format(ordine.dataOrdine, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
-                    <td th:text="'€' + ${ordine.totale}">€0.00</td>
-                    <td><span class="badge bg-warning" th:text="${ordine.stato}">CREATO</span></td>
-                    <td>
-                        <a th:href="@{/ordini/{id}(id=${ordine.id})}" class="btn btn-sm btn-outline-primary">📄</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <h2 class="panel__head">Ordini in attesa</h2>
+
+    <div th:if="${ordiniRecent != null && !ordiniRecent.isEmpty()}" class="panel">
+        <div class="table-responsive">
+            <table class="table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utente</th>
+                        <th>Data</th>
+                        <th>Totale</th>
+                        <th>Stato</th>
+                        <th class="text-end">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ordine : ${ordiniRecent}">
+                        <td th:text="${ordine.id}">1</td>
+                        <td th:text="${ordine.utente != null ? ordine.utente.email : 'N/A'}">email@test.com</td>
+                        <td th:text="${#temporals.format(ordine.dataOrdine, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                        <td th:text="'€' + ${ordine.totale}">€0,00</td>
+                        <td><span class="stato" th:text="${ordine.stato}">CREATO</span></td>
+                        <td class="text-end">
+                            <a th:href="@{/ordini/{id}(id=${ordine.id})}" class="btn btn-sm btn-outline-primary">Dettaglio</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-<p th:if="${ordiniRecent == null || ordiniRecent.isEmpty()}" class="text-muted">
-    Nessun ordine in attesa.
-</p>
+
+    <p th:if="${ordiniRecent == null || ordiniRecent.isEmpty()}" class="form-note">
+        Nessun ordine in attesa.
+    </p>
+
+</section>
