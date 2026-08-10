@@ -1,12 +1,5 @@
-/* ============================================================
-   INTIMI LUNNA — Editorial Lingerie
-   Foglio di stile unico (sostituisce static/css/style.css)
-   Stile: editoriale, chiaro, tipografia serif + sans spaziato
-   ============================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap');
 
-/* ---------- 1. Variabili ---------- */
 :root {
   --bg:            #faf8f6;
   --bg-alt:        #f2eeea;
@@ -15,7 +8,7 @@
   --ink-soft:      #5d564f;
   --ink-mute:      #8d857d;
   --line:          #e4ded7;
-  --accent:        #b08d74;   /* nude / cipria scuro */
+  --accent:        #b08d74;  
   --accent-soft:   #e8d9cd;
   --danger:        #a4442f;
 
@@ -30,7 +23,7 @@
   --border: var(--line);
 }
 
-/* ---------- 2. Base ---------- */
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
