@@ -24,9 +24,18 @@
         <div th:if="${carrello != null && !carrello.getRighe().isEmpty()}">
             <div class="panel">
                 <h2 class="panel__head">Riepilogo</h2>
-                <div th:each="riga : ${carrello.getRighe()}" class="panel__row">
-                    <span th:text="${riga.prodotto.nome} + ' × ' + ${riga.quantita}">Prodotto × 2</span>
-                    <span th:text="'€' + ${riga.getSubtotale()}">€39,98</span>
+                <div th:each="riga : ${carrello.getRighe()}" class="panel__row cart-row">
+                    <span class="cart-row__name" th:text="${riga.prodotto.nome}">Prodotto</span>
+                    <form th:action="@{/carrello/update/{id}(id=${riga.prodotto.id})}" method="post" class="cart-row__qty">
+                        <label class="visually-hidden">Quantità</label>
+                        <input type="number" name="quantita" th:value="${riga.quantita}" min="1"
+                               th:max="${riga.prodotto.quantitaDisponibile}" class="form-control form-control-sm">
+                        <button type="submit" class="btn-line btn-sm">Aggiorna</button>
+                    </form>
+                    <span class="cart-row__subtotale" th:text="'€' + ${riga.getSubtotale()}">€39,98</span>
+                    <form th:action="@{/carrello/remove/{id}(id=${riga.prodotto.id})}" method="post" class="cart-row__remove">
+                        <button type="submit" class="btn-line btn-sm" title="Rimuovi"><i class="fas fa-trash"></i></button>
+                    </form>
                 </div>
                 <div class="panel__row panel__row--total">
                     <span>Totale</span>
@@ -35,7 +44,7 @@
             </div>
 
             <div class="form-actions" style="margin-top: 32px;">
-                <a th:href="@{/carrello/checkout}" class="btn-solid">Procedi al checkout</a>
+                <a th:href="@{/ordini/checkout}" class="btn-solid">Procedi al checkout</a>
                 <a th:href="@{/prodotti}" class="btn-line">Continua lo shopping</a>
             </div>
         </div>

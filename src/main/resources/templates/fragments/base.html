@@ -20,6 +20,10 @@
                 <span></span><span></span><span></span>
             </button>
             <div class="logo"><a th:href="@{/}">Intimi <em>Lunna</em></a></div>
+            <form th:action="@{/prodotti}" method="get" class="nav-search" role="search">
+                <input type="text" name="search" placeholder="Cerca un capo..." aria-label="Cerca">
+                <button type="submit" aria-label="Cerca"><i class="fas fa-search"></i></button>
+            </form>
             <div class="nav-icons">
                 <div class="dropdown" sec:authorize="isAuthenticated()">
                     <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account">

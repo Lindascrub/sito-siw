@@ -43,39 +43,32 @@
         <h2 class="section-title">Best Seller</h2>
         <section class="bestseller-section">
             <div class="bestseller-grid">
-                <div class="bestseller-item">
-                    <a th:href="@{/prodotti/1}">
-                        <img th:src="@{/images/triangolofiore.jpg}" src="/images/triangolofiore.jpg" alt="Bralette in pizzo">
+                <div class="bestseller-item" th:each="prodotto : ${bestSeller}">
+                    <a th:href="@{/prodotti/{id}(id=${prodotto.id})}">
+                        <img th:src="${prodotto.urlImage != null ? prodotto.urlImage : '/images/placeholder.jpg'}"
+                             th:alt="${prodotto.nome}">
                         <div class="item-overlay">
-                            <h4>Bralette in Pizzo</h4>
-                            <span class="price">€24,99</span>
+                            <h4 th:text="${prodotto.nome}">Nome prodotto</h4>
+                            <span class="price" th:text="'€' + ${prodotto.prezzo}">€24,99</span>
                         </div>
                     </a>
                 </div>
-                <div class="bestseller-item">
-                    <a th:href="@{/prodotti/2}">
-                        <img th:src="@{/images/guinaBeige.jpg}" src="/images/guinaBeige.jpg" alt="Slip in seta">
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- ULTIMI ARRIVI -->
+        <!-- ============================================ -->
+        <h2 class="section-title">Ultimi Arrivi</h2>
+        <section class="bestseller-section">
+            <div class="bestseller-grid">
+                <div class="bestseller-item" th:each="prodotto : ${ultimiArrivi}">
+                    <a th:href="@{/prodotti/{id}(id=${prodotto.id})}">
+                        <img th:src="${prodotto.urlImage != null ? prodotto.urlImage : '/images/placeholder.jpg'}"
+                             th:alt="${prodotto.nome}">
                         <div class="item-overlay">
-                            <h4>Slip in Seta</h4>
-                            <span class="price">€19,99</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="bestseller-item">
-                    <a th:href="@{/prodotti/3}">
-                        <img th:src="@{/images/reggisonoTrinagolo.jpg}" src="/images/reggisonoTrinagolo.jpg" alt="Reggiseno a triangolo">
-                        <div class="item-overlay">
-                            <h4>Reggiseno Triangolo</h4>
-                            <span class="price">€29,99</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="bestseller-item">
-                    <a th:href="@{/prodotti/4}">
-                        <img th:src="@{/images/bodyGiada.jpg}" src="/images/bodyGiada.jpg" alt="Body in pizzo">
-                        <div class="item-overlay">
-                            <h4>Body Giada</h4>
-                            <span class="price">€89,99</span>
+                            <h4 th:text="${prodotto.nome}">Nome prodotto</h4>
+                            <span class="price" th:text="'€' + ${prodotto.prezzo}">€24,99</span>
                         </div>
                     </a>
                 </div>
