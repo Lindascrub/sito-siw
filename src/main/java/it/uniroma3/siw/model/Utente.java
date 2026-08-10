@@ -42,6 +42,8 @@ public class Utente {
     
     private String telefono;
     private String indirizzo;
+    private String citta;
+    private String cap;
     
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "credenziali_id")
@@ -151,6 +153,22 @@ public class Utente {
 
 	public void setIndirizzo(String indirizzo) {
 		this.indirizzo = indirizzo;
+	}
+
+	public String getCitta() {
+		return citta;
+	}
+
+	public void setCitta(String citta) {
+		this.citta = citta;
+	}
+
+	public String getCap() {
+		return cap;
+	}
+
+	public void setCap(String cap) {
+		this.cap = cap;
 	}
 
 	public void setCredenziali(Credenziali credenziali) {
