@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} ? ${title} + ' — Intimi Lunna' : 'Intimi Lunna — Editorial Lingerie'">Intimi Lunna</title>
-    <meta name="description" content="Intimo editorial: pizzi, seta lavata e cuciture a mano. Coordinati, reggiseni, slip e loungewear.">
+    <title th:text="${title} ?: 'IntimiStore'">IntimiStore</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -12,17 +11,17 @@
 <body>
 
     <!-- ============================================ -->
-    <!-- NAVBAR (chiara, editoriale) -->
+    <!-- 🔹 NAVBAR (NERA, LOGO AL CENTRO) -->
     <!-- ============================================ -->
     <nav class="nav-top" th:fragment="navbar">
         <div class="container">
             <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navMenu').classList.toggle('show')">
                 <span></span><span></span><span></span>
             </button>
-            <div class="logo"><a th:href="@{/}">Intimi <em>Lunna</em></a></div>
+            <div class="logo"><a th:href="@{/}">IntimiStore</a></div>
             <div class="nav-icons">
                 <div class="dropdown" sec:authorize="isAuthenticated()">
-                    <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account">
+                    <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -36,10 +35,10 @@
                         </li>
                     </ul>
                 </div>
-                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" aria-label="Accedi"><i class="fas fa-user"></i></a>
-                <a th:href="@{/preferiti}" sec:authorize="isAuthenticated()" aria-label="Preferiti"><i class="fas fa-heart"></i></a>
-                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" aria-label="Preferiti"><i class="fas fa-heart"></i></a>
-                <a th:href="@{/carrello}" aria-label="Carrello">
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()"><i class="fas fa-user"></i></a>
+                <a th:href="@{/preferiti}" sec:authorize="isAuthenticated()"><i class="fas fa-heart"></i></a>
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()"><i class="fas fa-heart"></i></a>
+                <a th:href="@{/carrello}">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="badge" th:text="${carrello != null ? carrello.getNumeroArticoli() : 0}">0</span>
                 </a>
@@ -48,63 +47,64 @@
     </nav>
 
     <!-- ============================================ -->
-    <!-- MENU CATEGORIE -->
+    <!-- 🔹 MENU CATEGORIE -->
     <!-- ============================================ -->
     <div class="nav-menu" id="navMenu" th:fragment="nav-menu">
         <ul>
-            <li><a th:href="@{/prodotti}">Shop</a></li>
+            <li><a th:href="@{/prodotti}">Tutti</a></li>
             <li><a th:href="@{/prodotti?categoria=Intimo+Donna}">Donna</a></li>
             <li><a th:href="@{/prodotti?categoria=Intimo+Uomo}">Uomo</a></li>
-            <li><a th:href="@{/prodotti?categoria=Pigiami}">Loungewear</a></li>
+            <li><a th:href="@{/prodotti?categoria=Pigiami}">Pigiami</a></li>
             <li><a th:href="@{/prodotti?categoria=Sport}">Sport</a></li>
             <li><a th:href="@{/prodotti?categoria=Accessori}">Accessori</a></li>
         </ul>
     </div>
 
     <!-- ============================================ -->
-    <!-- CONTENUTO -->
+    <!-- 🔹 CONTENUTO -->
     <!-- ============================================ -->
     <main th:fragment="content">
         <!-- Il contenuto specifico viene inserito qui -->
     </main>
 
     <!-- ============================================ -->
-    <!-- FOOTER -->
+    <!-- 🔹 FOOTER -->
     <!-- ============================================ -->
-    <footer th:fragment="footer">
-      <div>
-        <div class="logo">Intimi <em>Lunna</em></div>
-        <p class="tag">Intimo editorial per chi indossa la propria intimità come una firma.</p>
-      </div>
-      <div>
-        <h4>Negozio</h4>
-        <ul>
-          <li><a th:href="@{/prodotti}">Collezione</a></li>
-          <li><a th:href="@{/prodotti}">Novità</a></li>
-          <li><a th:href="@{/prodotti}">Saldi</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Assistenza</h4>
-        <ul>
-          <li><a href="#">Contattaci</a></li>
-          <li><a href="#">FAQ</a></li>
-          <li><a th:href="@{/ordini/history}">Traccia ordine</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Seguici</h4>
-        <ul>
-          <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-          <li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li>
-          <li><a href="#"><i class="fab fa-tiktok"></i> TikTok</a></li>
-        </ul>
-      </div>
-      <div class="bottom">
-        <span>© 2026 Intimi Lunna</span>
-        <span><a th:href="@{/assistenza-clienti/privacy}">Privacy — Termini</a></span>
-      </div>
-    </footer>
+	<footer th:fragment="footer">
+	  <div>
+	    <div class="logo">Lunna Store</div>
+	    <p class="tag">Il negozio di intimo che ti fa sentire al sicuro.</p>
+	  </div>
+	  <div>
+	    <h4>Negozio</h4>
+	    <ul>
+	      <li><a th:href="@{/prodotti}">Collezione</a></li>
+	      <li><a th:href="@{/prodotti}">Novità</a></li>
+	      <li><a th:href="@{/prodotti}">Saldi</a></li>
+	    </ul>
+	  </div>
+	  <div>
+	    <h4>Assistenza</h4>
+	    <ul>
+	       <li><a href="#">Contattaci</a></li>
+				 <li><a href="#">FAQ</a></li>
+				 <li><a th:href="@{/ordini/history}">Traccia ordine</a></li>
+	    </ul>
+	  </div>
+	  <div>
+	    <h4>Seguici</h4>
+	    <div style="display:flex;gap:14px;font-size:1.3rem;">
+					    <a href="#" style="color: var(--white-50);"><i class="fab fa-instagram"></i></a>
+					    <a href="#" style="color: var(--white-50);"><i class="fab fa-facebook"></i></a>
+					    <a href="#" style="color: var(--white-50);"><i class="fab fa-pinterest"></i></a>
+					    <a href="#" style="color: var(--white-50);"><i class="fab fa-tiktok"></i></a>
+					</div>
+	  </div>
+	  <div class="bottom">
+	    <span>© 2026 Lunna store</span>
+	    <span><a th:href="@{/assistenza-clienti/privacy}">Privacy — Termini</a></span>
+	  </div>
+	</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
