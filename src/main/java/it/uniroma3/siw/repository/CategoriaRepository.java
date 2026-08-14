@@ -1,7 +1,9 @@
 package it.uniroma3.siw.repository;
 
-import it.uniroma3.siw.model.Categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import it.uniroma3.siw.model.Categoria;
+
 import java.util.List;
 import java.util.Optional;
 

@@ -19,9 +19,7 @@ public class RigaCarrello {
     @ManyToOne
     private Prodotto prodotto;
     
-    // =============================================
-    // 🔹 AGGIUNGI QUESTI CAMPI!
-    // =============================================
+  
     private String taglia;
     private String colore;
     
@@ -31,9 +29,6 @@ public class RigaCarrello {
     
    
 
-	// =============================================
-    // COSTRUTTORI
-    // =============================================
     public RigaCarrello() {
     }
     
@@ -49,19 +44,14 @@ public class RigaCarrello {
         this.colore = colore;
     }
     
-    // =============================================
-    // METODI DI BUSINESS
-    // =============================================
-    public double getSubtotale() {
+     public double getSubtotale() {
         if (prodotto == null || quantita == null) {
             return 0.0;
         }
         return prodotto.getPrezzo() * quantita;
     }
     
-    // =============================================
-    // GETTER E SETTER
-    // =============================================
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -78,18 +68,15 @@ public class RigaCarrello {
 	public void setCarrello(Carrello carrello) {
 		this.carrello = carrello;
 	}
-    // =============================================
-    // 🔹 AGGIUNGI QUESTI GETTER E SETTER!
-    // =============================================
+
+
     public String getTaglia() { return taglia; }
     public void setTaglia(String taglia) { this.taglia = taglia; }
     
     public String getColore() { return colore; }
     public void setColore(String colore) { this.colore = colore; }
     
-    // =============================================
-    // EQUALS E HASHCODE
-    // =============================================
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

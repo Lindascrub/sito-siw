@@ -11,6 +11,8 @@ import it.uniroma3.siw.model.RigaOrdine;
 public interface RigaOrdineRepository extends JpaRepository<RigaOrdine, Long> {
     
     List<RigaOrdine> findByOrdine(Ordine ordine);
+
+    boolean existsByProdottoId(Long prodottoId);
     
     @Query("SELECT r.prodotto.id, SUM(r.quantita) as totale " +
            "FROM RigaOrdine r " +

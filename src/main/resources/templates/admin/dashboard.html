@@ -16,9 +16,14 @@
         <div class="grid-3">
             <div class="tile">
                 <h3>Prodotti</h3>
-                <p>Gestisci il catalogo</p>
-                <a th:href="@{/admin/prodotti}" class="btn-solid">Vai</a>
+                <p>Aggiungi un nuovo prodotto</p>
+                <a th:href="@{/admin/prodotti/form}" class="btn-solid">Vai</a>
             </div>
+			<div class="tile">
+				<h3>Magazzino</h3>
+				<p>Visualizza tutti i prodotti</p>
+				<a th:href="@{/admin/prodotti}" class="btn-solid">Vai</a>
+			</div>
             <div class="tile">
                 <h3>Categorie</h3>
                 <p>Gestisci le categorie</p>
@@ -27,8 +32,9 @@
             <div class="tile">
                 <h3>Ordini</h3>
                 <p>Visualizza tutti gli ordini</p>
-                <a th:href="@{/admin/orders}" class="btn-solid">Vai</a>
+                <a th:href="@{/admin/ordini}" class="btn-solid">Vai</a>
             </div>
+			
         </div>
 
     </main>

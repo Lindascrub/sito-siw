@@ -34,17 +34,11 @@ public class CarrelloController {
         this.authenticationHelper = authenticationHelper;
     }
     
-    // =============================================
-    // 🔹 RECUPERA UTENTE CORRENTE
-    // =============================================
-    
+  
     private Utente getCurrentUser() {
         return authenticationHelper.getCurrentUser();
     }
     
-    // =============================================
-    // 🔹 VISUALIZZA CARRELLO
-    // =============================================
     
     @GetMapping
     public String viewCart(Model model) {
@@ -58,10 +52,7 @@ public class CarrelloController {
         return "carrello/view";
     }
     
-    // =============================================
-    // 🔹 AGGIUNGI PRODOTTO AL CARRELLO
-    // =============================================
-    
+  
     @PostMapping("/add/{prodottoId}")
     public String addToCart(@PathVariable Long prodottoId,
                             @RequestParam(defaultValue = "1") Integer quantita,
@@ -72,7 +63,7 @@ public class CarrelloController {
         Utente utente = getCurrentUser();
         
         try {
-            carrelloService.aggiungiProdotto(utente.getId(), prodottoId, quantita);
+            carrelloService.aggiungiProdotto(utente.getId(), prodottoId, quantita, taglia, colore);
             logger.info("Prodotto {} aggiunto al carrello", prodottoId);
         } catch (RuntimeException e) {
             logger.error("Errore aggiunta al carrello: {}", e.getMessage());
@@ -82,9 +73,22 @@ public class CarrelloController {
         return "redirect:/carrello";
     }
     
-    // =============================================
-    // 🔹 AGGIORNA QUANTITÀ NEL CARRELLO
-    // =============================================
+    
+    @PostMapping("/update-riga/{prodottoId}")
+    public String updateRiga(@PathVariable Long prodottoId,
+                             @RequestParam(required = false) Integer quantita,
+                             @RequestParam(required = false) String taglia,
+                             @RequestParam(required = false) String colore,
+                             RedirectAttributes redirectAttributes) {
+        Utente utente = getCurrentUser();
+        try {
+            carrelloService.aggiornaRiga(utente.getId(), prodottoId, quantita, taglia, colore);
+        } catch (RuntimeException e) {
+            logger.error("Errore aggiornamento riga carrello: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+        }
+        return "redirect:/carrello";
+    }
     
     @PostMapping("/update/{prodottoId}")
     public String updateQuantity(@PathVariable Long prodottoId,
@@ -98,10 +102,16 @@ public class CarrelloController {
         return "redirect:/carrello";
     }
     
-    // =============================================
-    // 🔹 RIMUOVI PRODOTTO DAL CARRELLO
-    // =============================================
+    @PostMapping("/update-details/{prodottoId}")
+    public String updateDetails(@PathVariable Long prodottoId,
+                                @RequestParam String taglia,
+                                @RequestParam String colore) {
+        Utente utente = getCurrentUser();
+        carrelloService.aggiornaDettagli(utente.getId(), prodottoId, taglia, colore);
+        return "redirect:/carrello";
+    }
     
+   
     @PostMapping("/remove/{prodottoId}")
     public String removeFromCart(@PathVariable Long prodottoId) {
         Utente utente = getCurrentUser();
@@ -109,10 +119,7 @@ public class CarrelloController {
         return "redirect:/carrello";
     }
     
-    // =============================================
-    // 🔹 SVUOTA CARRELLO
-    // =============================================
-    
+  
     @PostMapping("/clear")
     public String clearCart() {
         Utente utente = getCurrentUser();
@@ -120,10 +127,6 @@ public class CarrelloController {
         return "redirect:/carrello";
     }
 
-    // =============================================
-    // 🔹 COMPATIBILITÀ: redirect al vero checkout
-    // (alcuni link salvati puntavano qui per errore)
-    // =============================================
 
     @GetMapping("/checkout")
     public String redirectToCheckout() {

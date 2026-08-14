@@ -26,16 +26,12 @@ public class AuthController {
         this.utenteService = utenteService;
     }
     
-    // =============================================
-    // 🔹 LOGIN
-    // =============================================
+
     
     @GetMapping("/login")
     public String login(@RequestParam(required = false) String error, 
                         @RequestParam(required = false) String successo,
                         Model model) {
-        // 🔹 Se l'utente è già autenticato, non mostrare il form di login:
-        // portalo direttamente al suo profilo, già dentro l'account.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
                 && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
@@ -50,19 +46,13 @@ public class AuthController {
         return "auth/login";
     }
     
-    // =============================================
-    // 🔹 FORM REGISTRAZIONE
-    // =============================================
-    
+
     @GetMapping("/register")
     public String registerForm(Model model) {
         model.addAttribute("registrationDto", new RegistrationDto());
         return "auth/register";
     }
-    
-    // =============================================
-    // 🔹 REGISTRAZIONE - ✅ IL TUO CODICE VA QUI!
-    // =============================================
+
     
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("registrationDto") RegistrationDto registrationDto,
@@ -70,19 +60,16 @@ public class AuthController {
                            Model model,
                            RedirectAttributes redirectAttributes) {
         
-        // 🔹 Se ci sono errori di validazione, torna al form
         if (bindingResult.hasErrors()) {
             return "auth/register";
         }
         
-        // 🔹 Controllo che password e conferma coincidano
         if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
             model.addAttribute("errore", "Le password non coincidono");
             return "auth/register";
         }
         
         try {
-            // ✅ REGISTRAZIONE UTENTE
             utenteService.registraUtente(
                 registrationDto.getNome(),
                 registrationDto.getCognome(),
@@ -93,12 +80,11 @@ public class AuthController {
             
             logger.info("Nuovo utente registrato: {}", registrationDto.getEmail());
             
-            // ✅ SUCCESSO - Redirect con messaggio
+            
             redirectAttributes.addAttribute("successo", "Registrazione completata! Ora puoi accedere.");
             return "redirect:/login";
             
         } catch (RuntimeException e) {
-            // ❌ ERRORE - Torna al form con messaggio
             model.addAttribute("errore", e.getMessage());
             return "auth/register";
         }

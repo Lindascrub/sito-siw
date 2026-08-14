@@ -29,6 +29,16 @@
                             th:selected="${categoriaSelezionata == cat.nome}"></option>
                 </select>
             </div>
+			<div class="field">
+			        <label class="form-label">Prezzo da</label>
+			        <input type="number" name="prezzoMin" class="form-control" 
+			               step="0.01" min="0" th:value="${prezzoMin}" placeholder="0">
+			    </div>
+			    <div class="field">
+			        <label class="form-label">Prezzo a</label>
+			        <input type="number" name="prezzoMax" class="form-control" 
+			               step="0.01" min="0" th:value="${prezzoMax}" placeholder="999">
+			    </div>
             <button type="submit" class="btn-solid">Filtra</button>
         </form>
 

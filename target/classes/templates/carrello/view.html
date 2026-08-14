@@ -24,19 +24,39 @@
         <div th:if="${carrello != null && !carrello.getRighe().isEmpty()}">
             <div class="panel">
                 <h2 class="panel__head">Riepilogo</h2>
-                <div th:each="riga : ${carrello.getRighe()}" class="panel__row cart-row">
-                    <span class="cart-row__name" th:text="${riga.prodotto.nome}">Prodotto</span>
-                    <form th:action="@{/carrello/update/{id}(id=${riga.prodotto.id})}" method="post" class="cart-row__qty">
-                        <label class="visually-hidden">Quantità</label>
-                        <input type="number" name="quantita" th:value="${riga.quantita}" min="1"
-                               th:max="${riga.prodotto.quantitaDisponibile}" class="form-control form-control-sm">
-                        <button type="submit" class="btn-line btn-sm">Aggiorna</button>
-                    </form>
-                    <span class="cart-row__subtotale" th:text="'€' + ${riga.getSubtotale()}">€39,98</span>
-                    <form th:action="@{/carrello/remove/{id}(id=${riga.prodotto.id})}" method="post" class="cart-row__remove">
-                        <button type="submit" class="btn-line btn-sm" title="Rimuovi"><i class="fas fa-trash"></i></button>
-                    </form>
-                </div>
+				<div th:each="riga : ${carrello.getRighe()}" class="panel__row cart-row">
+				    <div class="cart-row__info">
+				        <a th:href="@{/prodotti/{id}(id=${riga.prodotto.id})}" 
+				           th:text="${riga.prodotto.nome}">Prodotto</a>
+				        <span class="cart-row__details">
+				            Taglia: <span th:text="${riga.taglia}">M</span> | 
+				            Colore: <span th:text="${riga.colore}">Nero</span>
+				        </span>
+				        <!-- Modifica taglia/colore -->
+				        <form th:action="@{/carrello/update-details/{id}(id=${riga.prodotto.id})}" method="post">
+				            <select name="taglia" class="form-select form-select-sm">
+				                <option th:each="t : ${riga.prodotto.taglieDisponibili}" 
+				                        th:value="${t}" th:text="${t}"
+				                        th:selected="${t == riga.taglia}"></option>
+				            </select>
+				            <select name="colore" class="form-select form-select-sm">
+				                <option th:each="c : ${riga.prodotto.coloriDisponibili}" 
+				                        th:value="${c}" th:text="${c}"
+				                        th:selected="${c == riga.colore}"></option>
+				            </select>
+				            <button type="submit" class="btn-line btn-sm">Aggiorna</button>
+				        </form>
+				    </div>
+				    <form th:action="@{/carrello/update/{id}(id=${riga.prodotto.id})}" method="post" class="cart-row__qty">
+				        <input type="number" name="quantita" th:value="${riga.quantita}" min="1"
+				               th:max="${riga.prodotto.quantitaDisponibile}" class="form-control form-control-sm">
+				        <button type="submit" class="btn-line btn-sm">Aggiorna</button>
+				    </form>
+				    <span class="cart-row__subtotale" th:text="'€' + ${riga.getSubtotale()}">€39,98</span>
+				    <form th:action="@{/carrello/remove/{id}(id=${riga.prodotto.id})}" method="post" class="cart-row__remove">
+				        <button type="submit" class="btn-line btn-sm" title="Rimuovi"><i class="fas fa-trash"></i></button>
+				    </form>
+				</div>
                 <div class="panel__row panel__row--total">
                     <span>Totale</span>
                     <span th:text="'€' + ${carrello.getTotale()}">€0,00</span>

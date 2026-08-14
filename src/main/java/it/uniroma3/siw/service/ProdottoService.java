@@ -8,9 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.uniroma3.siw.model.Categoria;
 import it.uniroma3.siw.model.Prodotto;
+import it.uniroma3.siw.model.RigaCarrello;
+import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.repository.ProdottoRepository;
+import it.uniroma3.siw.repository.RigaCarrelloRepository;
 import it.uniroma3.siw.repository.RigaOrdineRepository;
+import it.uniroma3.siw.repository.UtenteRepository;
+
+import java.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,19 +30,96 @@ public class ProdottoService {
     
     private ProdottoRepository prodottoRepository;
     private final RigaOrdineRepository rigaOrdineRepository;
+    private final RigaCarrelloRepository rigaCarrelloRepository;
+    private final UtenteRepository utenteRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProdottoService.class);
     
-    public ProdottoService(ProdottoRepository prodottoRepository, RigaOrdineRepository rigaOrdineRepository) {
+    public ProdottoService(ProdottoRepository prodottoRepository,
+                           RigaOrdineRepository rigaOrdineRepository,
+                           RigaCarrelloRepository rigaCarrelloRepository,
+                           UtenteRepository utenteRepository) {
         this.prodottoRepository = prodottoRepository;
         this.rigaOrdineRepository = rigaOrdineRepository;
+        this.rigaCarrelloRepository = rigaCarrelloRepository;
+        this.utenteRepository = utenteRepository;
     }
 
-    /**
-     * Restituisce i prodotti più venduti in base alle quantità realmente
-     * vendute (somma delle righe ordine), non più una lista fissa scelta a mano.
-     * Se non ci sono ancora vendite registrate, torna semplicemente ai
-     * prodotti disponibili più recenti, così la sezione non resta vuota.
-     */
+   @Transactional(readOnly = true)
+    public List<Prodotto> findAll() {
+        return prodottoRepository.findAll().stream()
+            .sorted(Comparator.comparing(Prodotto::getId))
+            .toList();
+    }
+
+    
+    @Transactional
+    public Prodotto salvaDaForm(Prodotto datiForm, Categoria categoria,
+                                String taglieCsv, String coloriCsv) {
+
+        Prodotto prodotto = (datiForm.getId() == null)
+            ? new Prodotto()
+            : findById(datiForm.getId());
+
+        prodotto.setNome(datiForm.getNome());
+        prodotto.setDescrizione(datiForm.getDescrizione());
+        prodotto.setPrezzo(datiForm.getPrezzo());
+        prodotto.setQuantitaDisponibile(datiForm.getQuantitaDisponibile());
+        prodotto.setUrlImage(vuotoComeNull(datiForm.getUrlImage()));
+        prodotto.setCodiceModello(vuotoComeNull(datiForm.getCodiceModello()));
+        prodotto.setAttivo(datiForm.getAttivo() == null ? Boolean.TRUE : datiForm.getAttivo());
+        prodotto.setCategoria(categoria);
+        prodotto.setTaglieDisponibili(daCsv(taglieCsv));
+        prodotto.setColoriDisponibili(daCsv(coloriCsv));
+
+        return salvaProdotto(prodotto);
+    }
+
+    
+    @Transactional
+    public void eliminaProdotto(Long id) {
+        Prodotto prodotto = findById(id);
+
+        if (rigaOrdineRepository.existsByProdottoId(id)) {
+            throw new RuntimeException("Il prodotto \"" + prodotto.getNome()
+                + "\" è presente in ordini già effettuati: puoi solo disattivarlo.");
+        }
+
+        // Ripulisce i riferimenti nei carrelli e nei preferiti
+        List<RigaCarrello> righe = rigaCarrelloRepository.findByProdottoId(id);
+        if (!righe.isEmpty()) {
+            rigaCarrelloRepository.deleteAll(righe);
+        }
+        for (Utente utente : utenteRepository.findAll()) {
+            if (utente.getPreferiti().remove(prodotto)) {
+                utenteRepository.save(utente);
+            }
+        }
+
+        prodottoRepository.delete(prodotto);
+        logger.info("Prodotto eliminato: {}", prodotto.getNome());
+    }
+
+    private String vuotoComeNull(String valore) {
+        return (valore == null || valore.isBlank()) ? null : valore.trim();
+    }
+
+    private List<String> daCsv(String csv) {
+        List<String> valori = new ArrayList<>();
+        if (csv == null || csv.isBlank()) {
+            return valori;
+        }
+        Arrays.stream(csv.split(","))
+            .map(String::trim)
+            .filter(v -> !v.isEmpty())
+            .forEach(v -> {
+                if (!valori.contains(v)) {
+                    valori.add(v);
+                }
+            });
+        return valori;
+    }
+
+   
     @Transactional(readOnly = true)
     public List<Prodotto> findBestSeller(int limite) {
         logger.debug("Calcolo best seller in base alle vendite reali");
@@ -71,10 +155,7 @@ public class ProdottoService {
         return risultato;
     }
 
-    /**
-     * Ultimi prodotti aggiunti al catalogo (in base all'id, che è
-     * progressivo), con immagine reale del prodotto.
-     */
+    
     @Transactional(readOnly = true)
     public List<Prodotto> findUltimiArrivi(int limite) {
         logger.debug("Recupero ultimi arrivi");

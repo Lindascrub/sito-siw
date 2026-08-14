@@ -39,7 +39,12 @@ public class CarrelloService {
     
     @Transactional
     public Carrello aggiungiProdotto(Long utenteId, Long prodottoId, Integer quantita) {
-        Utente utente = utenteService.findById(utenteId);
+        return aggiungiProdotto(utenteId, prodottoId, quantita, null, null);
+    }
+    
+    @Transactional
+    public Carrello aggiungiProdotto(Long utenteId, Long prodottoId, Integer quantita,
+                                     String taglia, String colore) {
         Carrello carrello = trovaPerUtente(utenteId);
         Prodotto prodotto = prodottoService.findById(prodottoId);
         
@@ -47,7 +52,14 @@ public class CarrelloService {
             throw new RuntimeException("Stock insufficiente per: " + prodotto.getNome());
         }
         
-        carrello.aggiungiProdotto(prodotto, quantita);
+       if ((taglia == null || taglia.isBlank()) && !prodotto.getTaglieDisponibili().isEmpty()) {
+            taglia = prodotto.getTaglieDisponibili().get(0);
+        }
+        if ((colore == null || colore.isBlank()) && !prodotto.getColoriDisponibili().isEmpty()) {
+            colore = prodotto.getColoriDisponibili().get(0);
+        }
+        
+        carrello.aggiungiProdotto(prodotto, quantita, taglia, colore);
         logger.info("Aggiunto prodotto {} al carrello", prodotto.getNome());
         return carrelloRepository.save(carrello);
     }
@@ -93,5 +105,50 @@ public class CarrelloService {
         carrello.svuota();
         carrelloRepository.save(carrello);
         logger.info("Carrello svuotato per utente: {}", utenteId);
+    }
+    
+    
+    @Transactional
+    public Carrello aggiornaRiga(Long utenteId, Long prodottoId, Integer quantita,
+                                 String taglia, String colore) {
+        Carrello carrello = trovaPerUtente(utenteId);
+        Prodotto prodotto = prodottoService.findById(prodottoId);
+        
+        if (quantita == null || quantita <= 0) {
+            carrello.rimuoviProdotto(prodotto);
+            return carrelloRepository.save(carrello);
+        }
+        
+        if (prodotto.getQuantitaDisponibile() < quantita) {
+            throw new RuntimeException("Disponibili solo " + prodotto.getQuantitaDisponibile()
+                + " pezzi di " + prodotto.getNome());
+        }
+        
+        for (RigaCarrello riga : carrello.getRighe()) {
+            if (riga.getProdotto().getId().equals(prodottoId)) {
+                riga.setQuantita(quantita);
+                if (taglia != null && !taglia.isBlank()) {
+                    riga.setTaglia(taglia);
+                }
+                if (colore != null && !colore.isBlank()) {
+                    riga.setColore(colore);
+                }
+                break;
+            }
+        }
+        return carrelloRepository.save(carrello);
+    }
+    
+    @Transactional
+    public Carrello aggiornaDettagli(Long utenteId, Long prodottoId, String taglia, String colore) {
+        Carrello carrello = trovaPerUtente(utenteId);
+        for (RigaCarrello riga : carrello.getRighe()) {
+            if (riga.getProdotto().getId().equals(prodottoId)) {
+                riga.setTaglia(taglia);
+                riga.setColore(colore);
+                break;
+            }
+        }
+        return carrelloRepository.save(carrello);
     }
 }

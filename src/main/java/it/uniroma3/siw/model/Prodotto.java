@@ -47,12 +47,12 @@ public class Prodotto {
     
     private String urlImage;
     
-    // RELAZIONE: un prodotto appartiene a una categoria
+    //un prodotto appartiene a una categoria
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false) 
     private Categoria categoria;
     
-    // RELAZIONE: un prodotto può avere più taglie
+    //un prodotto può avere più taglie
     @ElementCollection
     @CollectionTable(name = "prodotto_taglie")
     @Column(name = "taglia")
@@ -67,11 +67,8 @@ public class Prodotto {
     private String codiceModello;
     
     private Boolean attivo = true; 
-    
-    // Costruttore vuoto
-    public Prodotto() {
-    	
-    }
+
+    public Prodotto() {}
     
     public Prodotto(String nome, Double prezzo) {
         this.nome = nome;

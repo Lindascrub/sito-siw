@@ -46,17 +46,23 @@ public class Carrello {
     }
     
     public void aggiungiProdotto(Prodotto prodotto, Integer quantita) {
-        if (quantita <= 0) return;
+        aggiungiProdotto(prodotto, quantita, null, null);
+    }
+    
+    public void aggiungiProdotto(Prodotto prodotto, Integer quantita, String taglia, String colore) {
+        if (quantita == null || quantita <= 0) return;
         
         for (RigaCarrello riga : righe) {
             if (riga.getProdotto().getId().equals(prodotto.getId())) {
-                // Aumenta la quantità se già presente
+                
                 riga.setQuantita(riga.getQuantita() + quantita);
+                if (taglia != null && !taglia.isBlank()) riga.setTaglia(taglia);
+                if (colore != null && !colore.isBlank()) riga.setColore(colore);
                 return;
             }
         }
-        // Aggiungi nuova riga
-        righe.add(new RigaCarrello(prodotto, quantita));
+
+        righe.add(new RigaCarrello(prodotto, quantita, taglia, colore));
     }
     
     public void rimuoviProdotto(Prodotto prodotto) {

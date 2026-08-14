@@ -20,7 +20,7 @@ public interface ProdottoRepository extends JpaRepository<Prodotto, Long> {
     
     List<Prodotto> findByQuantitaDisponibileGreaterThanAndAttivoTrue(Integer quantita);
     
-    // Query custom con JPQL
+    // Query 
     @Query("SELECT p FROM Prodotto p WHERE p.quantitaDisponibile > 0 AND p.attivo = true")
     List<Prodotto> findProdottiDisponibili();
     
@@ -31,7 +31,7 @@ public interface ProdottoRepository extends JpaRepository<Prodotto, Long> {
     List<Prodotto> searchProdotti(@Param("nome") String nome, 
                                   @Param("categoriaId") Long categoriaId);
     
-    // Controlli di esistenza
+
     boolean existsByCodiceModello(String codiceModello);
     
     boolean existsByNomeAndAttivoTrue(String nome);

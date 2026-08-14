@@ -60,9 +60,12 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 //  Risorse pubbliche
-                .requestMatchers("/prodotti/admin/**", "/categorie/admin/**").hasRole(Credenziali.ADMIN_ROLE)
-                .requestMatchers("/", "/index", "/prodotti", "/prodotti/**", 
-                                "/categorie","/assistenza-clienti", "/css/**", "/images/**", "/js/**").permitAll()
+                .requestMatchers("/", "/index", 
+                				"/prodotti", "/prodotti/**", 
+                                "/categorie",
+                                "/assistenza-clienti", "/assistenza-clienti/**",
+                                "/da-implementare",
+                                "/css/**", "/images/**").permitAll()
                 .requestMatchers("/register", "/registration-success", "/login", 
                                 "/oauth2/**").permitAll()
                 // Solo ADMIN

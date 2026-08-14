@@ -27,9 +27,7 @@ public class UtenteService {
         this.passwordEncoder = passwordEncoder;
     }
     
-    // =============================================
-    // 🔹 METODI ESISTENTI
-    // =============================================
+   
     
     @Transactional(readOnly = true)
     public Utente findById(Long id) {
@@ -43,7 +41,7 @@ public class UtenteService {
             .orElseThrow(() -> new RuntimeException("Utente non trovato: " + email));
     }
     
-    // ✅ AGGIUNGI QUESTO METODO!
+
     @Transactional(readOnly = true)
     public Utente getUtenteByUsername(String username) {
         logger.debug("Ricerca utente per username: {}", username);
@@ -52,16 +50,14 @@ public class UtenteService {
         return credenziali.getUtente();
     }
     
-    // ✅ AGGIUNGI QUESTO METODO!
+    
     @Transactional
     public Utente salvaUtente(Utente utente) {
         logger.info("Salvataggio utente: {}", utente.getEmail());
         return utenteRepository.save(utente);
     }
     
-    // =============================================
-    // 🔹 REGISTRAZIONE NORMALE
-    // =============================================
+ 
     
     @Transactional
     public Utente registraUtente(String nome, String cognome, String email, 
@@ -88,10 +84,9 @@ public class UtenteService {
         return utenteRepository.save(utente);
     }
     
-    // ✅ AGGIUNGI QUESTO METODO PER OAuth2!
     @Transactional
     public Utente registraUtenteOAuth2(String email, String nome, String cognome) {
-        // Verifica se esiste già per email
+    
         if (utenteRepository.existsByEmail(email)) {
             return utenteRepository.findByEmail(email).get();
         }

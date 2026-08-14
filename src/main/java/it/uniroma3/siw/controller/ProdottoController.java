@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/prodotti")
@@ -37,9 +38,11 @@ public class ProdottoController {
     @GetMapping
     public String listProdotti(@RequestParam(required = false) String categoria,
                                @RequestParam(required = false) String search,
+                               @RequestParam(required = false) Double prezzoMin,
+                               @RequestParam(required = false) Double prezzoMax,
                                Model model) {
-        
         List<Prodotto> prodotti;
+        List<Prodotto> filtrati;
         
         if (search != null && !search.isEmpty()) {
             prodotti = prodottoService.cercaPerNome(search);
@@ -53,8 +56,20 @@ public class ProdottoController {
             prodotti = prodottoService.findAllAttivi();
         }
         
-        model.addAttribute("prodotti", prodotti);
+        
+        if (prezzoMin != null || prezzoMax != null) {
+            Double min = prezzoMin != null ? prezzoMin : 0.0;
+            Double max = prezzoMax != null ? prezzoMax : Double.MAX_VALUE;
+            filtrati = prodotti.stream()
+                .filter(p -> p.getPrezzo() >= min && p.getPrezzo() <= max)
+                .collect(Collectors.toList());
+        } else {
+            filtrati = prodotti;
+        }
+        model.addAttribute("prodotti", filtrati);
         model.addAttribute("categorie", categoriaService.findAll());
+        model.addAttribute("prezzoMin", prezzoMin);
+        model.addAttribute("prezzoMax", prezzoMax);
         
         return "prodotti/list";
     }
@@ -68,83 +83,12 @@ public class ProdottoController {
         return "prodotti/show";
     }
     
-
-    @GetMapping("/admin/new")
-    public String createProdottoForm(Model model) {
-        model.addAttribute("prodotto", new Prodotto());
-        model.addAttribute("categorie", categoriaService.findAll());
-        model.addAttribute("taglie", tagliaService.findAllOrdinate());
-        return "prodotti/admin/form";
+    // Il vecchio backoffice viveva sotto /prodotti/admin: ora è tutto in /admin
+    @GetMapping("/admin")
+    public String vecchioBackoffice() {
+        return "redirect:/admin/prodotti";
     }
     
 
-    
-    @PostMapping("/admin/new")
-    public String saveProdotto(@Valid @ModelAttribute("prodotto") Prodotto prodotto,
-                               BindingResult bindingResult,
-                               Model model) {
-        
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("categorie", categoriaService.findAll());
-            model.addAttribute("taglie", tagliaService.findAllOrdinate());
-            return "prodotti/admin/form";
-        }
-        
-        try {
-            prodottoService.salvaProdotto(prodotto);
-            return "redirect:/prodotti/" + prodotto.getId();
-        } catch (RuntimeException e) {
-            bindingResult.rejectValue("codiceModello", "error.duplicate", e.getMessage());
-            model.addAttribute("categorie", categoriaService.findAll());
-            model.addAttribute("taglie", tagliaService.findAllOrdinate());
-            return "prodotti/admin/form";
-        }
-    }
 
-    
-    @GetMapping("/admin/edit/{id}")
-    public String editProdottoForm(@PathVariable Long id, Model model) {
-        Prodotto prodotto = prodottoService.findById(id);
-        model.addAttribute("prodotto", prodotto);
-        model.addAttribute("categorie", categoriaService.findAll());
-        model.addAttribute("taglie", tagliaService.findAllOrdinate());
-        return "prodotti/admin/form";
-    }
-    
-    @PostMapping("/admin/edit/{id}")
-    public String updateProdotto(@PathVariable Long id,
-                                 @Valid @ModelAttribute("prodotto") Prodotto prodotto,
-                                 BindingResult bindingResult,
-                                 Model model) {
-        
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("categorie", categoriaService.findAll());
-            model.addAttribute("taglie", tagliaService.findAllOrdinate());
-            return "prodotti/admin/form";
-        }
-        
-        try {
-            prodotto.setId(id);
-            prodottoService.salvaProdotto(prodotto);
-            return "redirect:/prodotti/" + id;
-        } catch (RuntimeException e) {
-            bindingResult.rejectValue("codiceModello", "error.duplicate", e.getMessage());
-            model.addAttribute("categorie", categoriaService.findAll());
-            model.addAttribute("taglie", tagliaService.findAllOrdinate());
-            return "prodotti/admin/form";
-        }
-    }
-    
-    
-    @GetMapping("/admin/disable/{id}")
-    public String disableProdotto(@PathVariable Long id) {
-        prodottoService.disattivaProdotto(id);
-        return "redirect:/prodotti";
-    }
-    
-    @GetMapping("/admin/enable/{id}")
-    public String enableProdotto(@PathVariable Long id) {
-        prodottoService.attivaProdotto(id);
-        return "redirect:/prodotti";
-    }
 }

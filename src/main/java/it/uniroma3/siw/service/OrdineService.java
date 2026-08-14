@@ -33,9 +33,7 @@ public class OrdineService {
         this.utenteService = utenteService;
     }
     
-    // =============================================
-    // 🔹 METODI CHE TI SERVONO (AGGIUNGI QUESTI!)
-    // =============================================
+    
     
     @Transactional(readOnly = true)
     public Ordine findById(Long id) {
@@ -52,6 +50,13 @@ public class OrdineService {
     }
     
     @Transactional(readOnly = true)
+    public List<Ordine> findAll() {
+        return ordineRepository.findAll().stream()
+            .sorted((a, b) -> b.getDataOrdine().compareTo(a.getDataOrdine()))
+            .toList();
+    }
+    
+    @Transactional(readOnly = true)
     public List<Ordine> trovaPerStato(StatoOrdine stato) {
         logger.debug("Ricerca ordini per stato: {}", stato);
         return ordineRepository.findByStato(stato);
@@ -62,10 +67,7 @@ public class OrdineService {
         logger.debug("Ricerca ordini per utente: {}", utente.getEmail());
         return ordineRepository.findByUtenteOrderByDataOrdineDesc(utente);
     }
-    
-    // =============================================
-    // 🔹 CREAZIONE ORDINE
-    // =============================================
+  
     
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Ordine creaOrdine(Long utenteId, List<ArticoloCarrelloDto> articoli,
@@ -112,9 +114,7 @@ public class OrdineService {
         return saved;
     }
     
-    // =============================================
-    // 🔹 CONFERMA PAGAMENTO
-    // =============================================
+ 
     
     @Transactional
     public Ordine confermaPagamento(Long ordineId, String metodoPagamento) {
@@ -144,21 +144,42 @@ public class OrdineService {
             throw new RuntimeException("Non puoi modificare un ordine già consegnato");
         }
         
+        if (nuovoStato == StatoOrdine.ANNULLATO) {
+            annullaOrdine(ordineId, true);
+            return findById(ordineId);
+        }
+        
         ordine.setStato(nuovoStato);
         logger.info("Stato ordine {} aggiornato a: {}", ordineId, nuovoStato);
         return ordineRepository.save(ordine);
     }
     
+   
+    @Transactional(readOnly = true)
+    public boolean annullabileDalCliente(Ordine ordine) {
+        return ordine.getStato() == StatoOrdine.CREATO || ordine.getStato() == StatoOrdine.PAGATO;
+    }
+    
     @Transactional
     public void annullaOrdine(Long ordineId) {
+        annullaOrdine(ordineId, false);
+    }
+    
+   
+    @Transactional
+    public void annullaOrdine(Long ordineId, boolean forzato) {
         Ordine ordine = findById(ordineId);
+        
+        if (ordine.getStato() == StatoOrdine.ANNULLATO) {
+            throw new RuntimeException("L'ordine è già stato annullato");
+        }
         
         if (ordine.getStato() == StatoOrdine.CONSEGNATO) {
             throw new RuntimeException("Non puoi annullare un ordine già consegnato");
         }
         
-        if (ordine.getStato() == StatoOrdine.PAGATO) {
-            throw new RuntimeException("Per annullare un ordine pagato, contatta l'assistenza");
+        if (!forzato && ordine.getStato() == StatoOrdine.SPEDITO) {
+            throw new RuntimeException("L'ordine è già stato spedito: contatta l'assistenza");
         }
         
         for (RigaOrdine riga : ordine.getRighe()) {

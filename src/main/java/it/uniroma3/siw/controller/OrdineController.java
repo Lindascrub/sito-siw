@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,9 +85,6 @@ public class OrdineController {
         return "ordini/checkout";
     }
     
-    // =============================================
-    // 🔹 CONFERMA ORDINE
-    // =============================================
     
     @PostMapping("/checkout")
     public String confermaOrdine(@RequestParam String indirizzo,
@@ -120,8 +119,7 @@ public class OrdineController {
             // Svuota il carrello
             carrelloService.svuotaCarrello(utente.getId());
 
-            // Ricorda i dati di spedizione nel profilo, così la prossima
-            // volta (anche la primissima) non serve reinserirli.
+            
             utente.setIndirizzo(indirizzo);
             utente.setCitta(citta);
             utente.setCap(cap);
@@ -150,10 +148,45 @@ public class OrdineController {
         return "ordini/storico";
     }
     
+    @GetMapping({"", "/"})
+    public String ordiniHome() {
+        return "redirect:/ordini/history";
+    }
+    
     @GetMapping("/{id}")
     public String dettaglioOrdine(@PathVariable Long id, Model model) {
         Ordine ordine = ordineService.findById(id);
+        controllaProprietario(ordine);
         model.addAttribute("ordine", ordine);
+        model.addAttribute("annullabile", ordineService.annullabileDalCliente(ordine));
         return "ordini/dettaglio";
+    }
+    
+    // =============================================
+    // ANNULLAMENTO ORDINE DA PARTE DEL CLIENTE
+    // =============================================
+    
+    @PostMapping("/{id}/annulla")
+    public String annullaOrdine(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Ordine ordine = ordineService.findById(id);
+        controllaProprietario(ordine);
+        
+        try {
+            ordineService.annullaOrdine(id, false);
+            redirectAttributes.addFlashAttribute("successo",
+                "Ordine #" + id + " annullato correttamente.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+        }
+        return "redirect:/ordini/" + id;
+    }
+    
+    /** Un cliente può vedere e gestire solo i propri ordini. */
+    private void controllaProprietario(Ordine ordine) {
+        Utente utente = getCurrentUser();
+        if (utente == null || ordine.getUtente() == null
+                || !ordine.getUtente().getId().equals(utente.getId())) {
+            throw new AccessDeniedException("Questo ordine non ti appartiene");
+        }
     }
 }
