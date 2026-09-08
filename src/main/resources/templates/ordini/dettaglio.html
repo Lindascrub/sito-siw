@@ -22,6 +22,9 @@
             </p>
         </div>
 
+        <div th:if="${successo}" class="alert alert-success" th:text="${successo}">Fatto</div>
+        <div th:if="${errore}" class="alert alert-danger" th:text="${errore}">Errore</div>
+
         <div class="split">
 
             <div class="panel">
@@ -62,6 +65,15 @@
                 <p class="mb-0" th:text="${ordine.cittaSpedizione} + ' — ' + ${ordine.codPostaleSpedizione}">Roma — 00100</p>
             </div>
 
+        </div>
+
+        <div th:replace="~{fragments/paypal :: pagamento(${ordine})}"></div>
+
+        <div th:if="${annullabile}" class="form-actions" style="margin-top: 24px;">
+            <form th:action="@{/ordini/{id}/annulla(id=${ordine.id})}" method="post"
+                  onsubmit="return confirm('Confermi di voler annullare questo ordine?')">
+                <button type="submit" class="btn-line">Annulla ordine</button>
+            </form>
         </div>
 
     </main>

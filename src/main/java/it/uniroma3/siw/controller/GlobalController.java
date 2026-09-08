@@ -4,6 +4,7 @@ import it.uniroma3.siw.model.Carrello;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.security.AuthenticationHelper;
 import it.uniroma3.siw.service.CarrelloService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -13,10 +14,19 @@ public class GlobalController {
     private final AuthenticationHelper authenticationHelper;
     private final CarrelloService carrelloService;
 
+    @Value("${paypal.client-id}")
+    private String paypalClientId;
+
     public GlobalController(AuthenticationHelper authenticationHelper,
                             CarrelloService carrelloService) {
         this.authenticationHelper = authenticationHelper;
         this.carrelloService = carrelloService;
+    }
+
+    /** Client id pubblico (non il secret) usato dal PayPal JS SDK in pagina. */
+    @ModelAttribute("paypalClientId")
+    public String getPaypalClientId() {
+        return paypalClientId;
     }
 
     @ModelAttribute("utenteCorrente")

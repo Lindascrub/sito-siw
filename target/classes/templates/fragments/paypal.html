@@ -1,0 +1,66 @@
+<!-- Frammento: bottone di pagamento PayPal per un ordine in stato CREATO -->
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="pagamento(ordine)">
+
+    <div th:if="${ordine.stato.name() == 'CREATO'}" class="panel" style="margin-top:24px;">
+        <h2 class="panel__head">Completa il pagamento</h2>
+        <p>Paga con PayPal per confermare l'ordine.</p>
+        <div th:id="'paypal-button-container-' + ${ordine.id}"></div>
+
+        <script th:src="'https://www.paypal.com/sdk/js?client-id=' + ${paypalClientId} + '&currency=EUR&intent=capture'"></script>
+        <script th:inline="javascript">
+            (function () {
+                var ordineId = /*[[${ordine.id}]]*/ 0;
+                var csrfToken = document.querySelector('meta[name="_csrf"]').content;
+                var csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+                paypal.Buttons({
+                    createOrder: function () {
+                        return fetch('/ordini/' + ordineId + '/paypal/crea', {
+                            method: 'POST',
+                            headers: (function () {
+                                var h = {};
+                                h[csrfHeader] = csrfToken;
+                                return h;
+                            })()
+                        })
+                        .then(function (res) {
+                            if (!res.ok) { throw new Error('Impossibile avviare il pagamento'); }
+                            return res.json();
+                        })
+                        .then(function (data) { return data.id; });
+                    },
+                    onApprove: function (data) {
+                        return fetch('/ordini/' + ordineId + '/paypal/cattura', {
+                            method: 'POST',
+                            headers: (function () {
+                                var h = {};
+                                h['Content-Type'] = 'application/json';
+                                h[csrfHeader] = csrfToken;
+                                return h;
+                            })(),
+                            body: JSON.stringify({ paypalOrderId: data.orderID })
+                        })
+                        .then(function (res) {
+                            if (!res.ok) { throw new Error('Pagamento non completato'); }
+                            window.location.reload();
+                        });
+                    },
+                    onError: function (err) {
+                        console.error(err);
+                        alert('Si è verificato un problema con il pagamento PayPal. Riprova.');
+                    }
+                }).render('#paypal-button-container-' + ordineId);
+            })();
+        </script>
+    </div>
+
+    <div th:if="${ordine.stato.name() != 'CREATO'}" class="panel" style="margin-top:24px;">
+        <h2 class="panel__head">Pagamento</h2>
+        <p th:if="${ordine.stato.name() == 'ANNULLATO'}">Ordine annullato: nessun pagamento richiesto.</p>
+        <p th:unless="${ordine.stato.name() == 'ANNULLATO'}">
+            Pagamento ricevuto<span th:if="${ordine.dataPagamento}" th:text="' il ' + ${#temporals.format(ordine.dataPagamento, 'dd/MM/yyyy HH:mm')}"></span>
+            <span th:if="${ordine.metodoPagamento}" th:text="' (' + ${ordine.metodoPagamento} + ')'"></span>.
+        </p>
+    </div>
+
+</div>
