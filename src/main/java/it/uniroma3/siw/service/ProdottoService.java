@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.uniroma3.siw.model.Categoria;
 import it.uniroma3.siw.model.Prodotto;
+import it.uniroma3.siw.model.Recensione;
 import it.uniroma3.siw.model.RigaCarrello;
+import it.uniroma3.siw.model.RigaOrdine;
 import it.uniroma3.siw.model.Utente;
 import it.uniroma3.siw.repository.ProdottoRepository;
+import it.uniroma3.siw.repository.RecensioneRepository;
 import it.uniroma3.siw.repository.RigaCarrelloRepository;
 import it.uniroma3.siw.repository.RigaOrdineRepository;
 import it.uniroma3.siw.repository.UtenteRepository;
@@ -32,16 +35,19 @@ public class ProdottoService {
     private final RigaOrdineRepository rigaOrdineRepository;
     private final RigaCarrelloRepository rigaCarrelloRepository;
     private final UtenteRepository utenteRepository;
+    private final RecensioneRepository recensioneRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProdottoService.class);
-    
+
     public ProdottoService(ProdottoRepository prodottoRepository,
                            RigaOrdineRepository rigaOrdineRepository,
                            RigaCarrelloRepository rigaCarrelloRepository,
-                           UtenteRepository utenteRepository) {
+                           UtenteRepository utenteRepository,
+                           RecensioneRepository recensioneRepository) {
         this.prodottoRepository = prodottoRepository;
         this.rigaOrdineRepository = rigaOrdineRepository;
         this.rigaCarrelloRepository = rigaCarrelloRepository;
         this.utenteRepository = utenteRepository;
+        this.recensioneRepository = recensioneRepository;
     }
 
    @Transactional(readOnly = true)
@@ -79,15 +85,30 @@ public class ProdottoService {
     public void eliminaProdotto(Long id) {
         Prodotto prodotto = findById(id);
 
-        if (rigaOrdineRepository.existsByProdottoId(id)) {
-            throw new RuntimeException("Il prodotto \"" + prodotto.getNome()
-                + "\" è presente in ordini già effettuati: puoi solo disattivarlo.");
+        // Le righe ordine già effettuate mantengono il nome salvato al momento
+        // dell'acquisto (nomeProdotto): scolleghiamo solo il riferimento al
+        // prodotto vivo, così lo storico resta leggibile anche dopo l'eliminazione.
+        List<RigaOrdine> righeOrdine = rigaOrdineRepository.findByProdottoId(id);
+        for (RigaOrdine riga : righeOrdine) {
+            if (riga.getNomeProdotto() == null) {
+                riga.setNomeProdotto(prodotto.getNome());
+            }
+            riga.setProdotto(null);
+        }
+        if (!righeOrdine.isEmpty()) {
+            rigaOrdineRepository.saveAll(righeOrdine);
         }
 
         // Ripulisce i riferimenti nei carrelli e nei preferiti
         List<RigaCarrello> righe = rigaCarrelloRepository.findByProdottoId(id);
         if (!righe.isEmpty()) {
             rigaCarrelloRepository.deleteAll(righe);
+        }
+
+        // Le recensioni non hanno senso senza il prodotto a cui si riferiscono
+        List<Recensione> recensioni = recensioneRepository.findByProdottoId(id);
+        if (!recensioni.isEmpty()) {
+            recensioneRepository.deleteAll(recensioni);
         }
         for (Utente utente : utenteRepository.findAll()) {
             if (utente.getPreferiti().remove(prodotto)) {

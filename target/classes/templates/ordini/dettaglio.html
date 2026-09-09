@@ -42,7 +42,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="riga : ${ordine.righe}">
-                                <td th:text="${riga.prodotto.nome}">Prodotto</td>
+                                <td th:text="${riga.nomeProdottoVisualizzato}">Prodotto</td>
                                 <td th:text="${riga.taglia}">M</td>
                                 <td th:text="${riga.colore}">Nero</td>
                                 <td th:text="${riga.quantita}">1</td>

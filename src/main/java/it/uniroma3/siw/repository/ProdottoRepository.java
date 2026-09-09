@@ -25,7 +25,7 @@ public interface ProdottoRepository extends JpaRepository<Prodotto, Long> {
     List<Prodotto> findProdottiDisponibili();
     
     @Query("SELECT p FROM Prodotto p WHERE " +
-           "(:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
+           "(:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', CAST(:nome AS string), '%'))) AND " +
            "(:categoriaId IS NULL OR p.categoria.id = :categoriaId) AND " +
            "p.attivo = true")
     List<Prodotto> searchProdotti(@Param("nome") String nome, 

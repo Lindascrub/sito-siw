@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,23 +41,31 @@ public class ProdottoController {
                                @RequestParam(required = false) String search,
                                @RequestParam(required = false) Double prezzoMin,
                                @RequestParam(required = false) Double prezzoMax,
+                               @RequestParam(required = false) String ordina,
+                               @RequestParam(required = false) Integer page,
                                Model model) {
         List<Prodotto> prodotti;
         List<Prodotto> filtrati;
-        
-        if (search != null && !search.isEmpty()) {
-            prodotti = prodottoService.cercaPerNome(search);
-            model.addAttribute("searchTerm", search);
-        } else if (categoria != null && !categoria.isEmpty()) {
-            // Cerca categoria per nome
-            Categoria cat = categoriaService.findByNome(categoria);
-            prodotti = prodottoService.cercaPerCategoria(cat.getId());
-            model.addAttribute("categoriaSelezionata", categoria);
+
+        boolean haSearch = search != null && !search.isEmpty();
+        boolean haCategoria = categoria != null && !categoria.isEmpty();
+
+        if (haSearch || haCategoria) {
+            Long categoriaId = null;
+            if (haCategoria) {
+                Categoria cat = categoriaService.findByNome(categoria);
+                categoriaId = cat.getId();
+                model.addAttribute("categoriaSelezionata", categoria);
+            }
+            prodotti = prodottoService.cercaAvanzata(haSearch ? search : null, categoriaId);
+            if (haSearch) {
+                model.addAttribute("searchTerm", search);
+            }
         } else {
             prodotti = prodottoService.findAllAttivi();
         }
-        
-        
+
+
         if (prezzoMin != null || prezzoMax != null) {
             Double min = prezzoMin != null ? prezzoMin : 0.0;
             Double max = prezzoMax != null ? prezzoMax : Double.MAX_VALUE;
@@ -66,11 +75,37 @@ public class ProdottoController {
         } else {
             filtrati = prodotti;
         }
-        model.addAttribute("prodotti", filtrati);
+
+        List<Prodotto> ordinati = new java.util.ArrayList<>(filtrati);
+        if ("prezzo-asc".equals(ordina)) {
+            ordinati.sort(Comparator.comparing(Prodotto::getPrezzo));
+        } else if ("prezzo-desc".equals(ordina)) {
+            ordinati.sort(Comparator.comparing(Prodotto::getPrezzo).reversed());
+        } else if ("nuovi".equals(ordina)) {
+            ordinati.sort(Comparator.comparing(Prodotto::getId).reversed());
+        }
+        // "rilevanza" (o nessun valore): mantiene l'ordine restituito dalla ricerca/filtro
+
+        int dimensionaPagina = 20;
+        int totaleProdotti = ordinati.size();
+        int totalePagine = (int) Math.ceil(totaleProdotti / (double) dimensionaPagina);
+        int paginaCorrente = (page == null || page < 1) ? 1 : page;
+        if (totalePagine > 0 && paginaCorrente > totalePagine) {
+            paginaCorrente = totalePagine;
+        }
+        int daIndice = Math.min((paginaCorrente - 1) * dimensionaPagina, totaleProdotti);
+        int aIndice = Math.min(daIndice + dimensionaPagina, totaleProdotti);
+        List<Prodotto> prodottiPagina = ordinati.subList(daIndice, aIndice);
+
+        model.addAttribute("prodotti", prodottiPagina);
         model.addAttribute("categorie", categoriaService.findAll());
         model.addAttribute("prezzoMin", prezzoMin);
         model.addAttribute("prezzoMax", prezzoMax);
-        
+        model.addAttribute("ordina", ordina);
+        model.addAttribute("paginaCorrente", paginaCorrente);
+        model.addAttribute("totalePagine", totalePagine);
+        model.addAttribute("totaleProdotti", totaleProdotti);
+
         return "prodotti/list";
     }
     
@@ -82,13 +117,6 @@ public class ProdottoController {
         model.addAttribute("prodotto", prodotto);
         return "prodotti/show";
     }
-    
-    // Il vecchio backoffice viveva sotto /prodotti/admin: ora è tutto in /admin
-    @GetMapping("/admin")
-    public String vecchioBackoffice() {
-        return "redirect:/admin/prodotti";
-    }
-    
 
 
 }

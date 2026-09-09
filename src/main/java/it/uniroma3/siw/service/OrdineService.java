@@ -93,6 +93,7 @@ public class OrdineService {
             
             RigaOrdine riga = new RigaOrdine();
             riga.setProdotto(prodotto);
+            riga.setNomeProdotto(prodotto.getNome());
             riga.setQuantita(articolo.getQuantita());
             riga.setPrezzoUnitario(prodotto.getPrezzo());
             riga.setTaglia(articolo.getTaglia());

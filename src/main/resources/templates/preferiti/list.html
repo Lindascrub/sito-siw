@@ -27,7 +27,7 @@
                 </a>
                 <div class="card-body">
                     <h5 class="card-title"><a th:href="@{/prodotti/{id}(id=${prodotto.id})}" th:text="${prodotto.nome}">Nome</a></h5>
-                    <span class="price" th:text="'€' + ${prodotto.prezzo}">€19,99</span>
+                    <span class="price" th:text="'€' + ${#numbers.formatDecimal(prodotto.prezzo, 1, 'NONE', 2, 'POINT')}">€19.99</span>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <span class="category-badge" th:text="${prodotto.categoria != null ? prodotto.categoria.nome : 'Generico'}">Categoria</span>
                         <form th:action="@{/preferiti/toggle/{id}(id=${prodotto.id})}" method="post" class="d-inline">

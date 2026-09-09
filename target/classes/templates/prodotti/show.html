@@ -26,7 +26,7 @@
                 <div>
                     <span class="eyebrow" th:text="${prodotto.categoria != null ? prodotto.categoria.nome : 'Senza categoria'}">Categoria</span>
                     <h1 th:text="${prodotto.nome}">Nome prodotto</h1>
-                    <span class="price-lg" th:text="'€' + ${prodotto.prezzo}">€19,99</span>
+                    <span class="price-lg" th:text="'€' + ${#numbers.formatDecimal(prodotto.prezzo, 1, 'NONE', 2, 'POINT')}">€19.99</span>
 
                     <div th:if="${prodotto.quantitaDisponibile > 0}" class="stock-ok">Disponibile &middot;
                         <span th:text="${prodotto.quantitaDisponibile} + ' pezzi'">10 pezzi</span>

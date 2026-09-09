@@ -14,4 +14,6 @@ public interface RecensioneRepository extends JpaRepository<Recensione, Long> {
     List<Recensione> findByUtenteOrderByDataCreazioneDesc(Utente utente);
     
     boolean existsByUtenteAndProdotto(Utente utente, Prodotto prodotto);
+
+    List<Recensione> findByProdottoId(Long prodottoId);
 }

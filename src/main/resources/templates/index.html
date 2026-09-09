@@ -40,7 +40,7 @@
                              th:alt="${prodotto.nome}">
                         <div class="item-overlay">
                             <h4 th:text="${prodotto.nome}">Nome prodotto</h4>
-                            <span class="price" th:text="'€' + ${prodotto.prezzo}">€24,99</span>
+                            <span class="price" th:text="'€' + ${#numbers.formatDecimal(prodotto.prezzo, 1, 'NONE', 2, 'POINT')}">€24.99</span>
                         </div>
                     </a>
                 </div>
@@ -59,7 +59,7 @@
                              th:alt="${prodotto.nome}">
                         <div class="item-overlay">
                             <h4 th:text="${prodotto.nome}">Nome prodotto</h4>
-                            <span class="price" th:text="'€' + ${prodotto.prezzo}">€24,99</span>
+                            <span class="price" th:text="'€' + ${#numbers.formatDecimal(prodotto.prezzo, 1, 'NONE', 2, 'POINT')}">€24.99</span>
                         </div>
                     </a>
                 </div>

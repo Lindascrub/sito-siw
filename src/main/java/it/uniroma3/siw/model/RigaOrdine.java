@@ -25,7 +25,10 @@ public class RigaOrdine {
     
     private String taglia;
     private String colore;
-      
+
+    /** Nome del prodotto al momento dell'ordine: resta leggibile anche se il prodotto viene poi eliminato. */
+    private String nomeProdotto;
+
     public RigaOrdine() {
     }
     
@@ -106,6 +109,22 @@ public class RigaOrdine {
 	public void setColore(String colore) {
 		this.colore = colore;
 	}
+
+	public String getNomeProdotto() {
+		return nomeProdotto;
+	}
+
+	public void setNomeProdotto(String nomeProdotto) {
+		this.nomeProdotto = nomeProdotto;
+	}
+
+	/** Nome da mostrare: quello salvato al momento dell'ordine, con un fallback se mancante. */
+	public String getNomeProdottoVisualizzato() {
+		if (nomeProdotto != null) return nomeProdotto;
+		if (prodotto != null) return prodotto.getNome();
+		return "Prodotto rimosso";
+	}
+
 	@Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

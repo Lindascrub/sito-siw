@@ -13,9 +13,12 @@ public interface RigaOrdineRepository extends JpaRepository<RigaOrdine, Long> {
     List<RigaOrdine> findByOrdine(Ordine ordine);
 
     boolean existsByProdottoId(Long prodottoId);
-    
+
+    List<RigaOrdine> findByProdottoId(Long prodottoId);
+
     @Query("SELECT r.prodotto.id, SUM(r.quantita) as totale " +
            "FROM RigaOrdine r " +
+           "WHERE r.prodotto IS NOT NULL " +
            "GROUP BY r.prodotto.id " +
            "ORDER BY totale DESC")
     List<Object[]> findProdottiPiuVenduti();
