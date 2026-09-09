@@ -15,40 +15,62 @@
 
 		
         <form th:action="@{/prodotti}" method="get" class="filter-bar">
-            <div class="field">
-                <label class="form-label">Cerca</label>
-                <input type="text" name="search" class="form-control" placeholder="Bralette, slip, seta..." th:value="${searchTerm}">
+            <div class="filter-bar__row filter-bar__row--top">
+                <div class="field">
+                    <label class="form-label">Cerca</label>
+                    <input type="text" name="search" class="form-control" placeholder="Bralette, slip, seta..." th:value="${searchTerm}">
+                </div>
+                <div class="field">
+                    <label class="form-label">Categoria</label>
+                    <select name="categoria" class="form-select">
+                        <option value="">Tutte le categorie</option>
+                        <option th:each="cat : ${categorie}"
+                                th:value="${cat.nome}"
+                                th:text="${cat.nome}"
+                                th:selected="${categoriaSelezionata == cat.nome}"></option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="form-label">Ordina per</label>
+                    <select name="ordina" class="form-select">
+                        <option value="" th:selected="${ordina == null || ordina == ''}">Rilevanza</option>
+                        <option value="nuovi" th:selected="${ordina == 'nuovi'}">Novità</option>
+                        <option value="prezzo-asc" th:selected="${ordina == 'prezzo-asc'}">Prezzo crescente</option>
+                        <option value="prezzo-desc" th:selected="${ordina == 'prezzo-desc'}">Prezzo decrescente</option>
+                    </select>
+                </div>
             </div>
-            <div class="field">
-                <label class="form-label">Categoria</label>
-                <select name="categoria" class="form-select">
-                    <option value="">Tutte le categorie</option>
-                    <option th:each="cat : ${categorie}"
-                            th:value="${cat.nome}"
-                            th:text="${cat.nome}"
-                            th:selected="${categoriaSelezionata == cat.nome}"></option>
-                </select>
+            <div class="filter-bar__row filter-bar__row--bottom">
+                <div class="field">
+                    <label class="form-label">Taglia</label>
+                    <select name="taglia" class="form-select">
+                        <option value="">Tutte le taglie</option>
+                        <option th:each="t : ${taglieDisponibili}"
+                                th:value="${t}" th:text="${t}"
+                                th:selected="${taglia == t}"></option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="form-label">Colore</label>
+                    <select name="colore" class="form-select">
+                        <option value="">Tutti i colori</option>
+                        <option th:each="c : ${coloriDisponibili}"
+                                th:value="${c}" th:text="${c}"
+                                th:selected="${colore == c}"></option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="form-label">Prezzo da</label>
+                    <input type="number" name="prezzoMin" class="form-control"
+                           step="0.01" min="0" th:value="${prezzoMin}" placeholder="0">
+                </div>
+                <div class="field">
+                    <label class="form-label">Prezzo a</label>
+                    <input type="number" name="prezzoMax" class="form-control"
+                           step="0.01" min="0" th:value="${prezzoMax}" placeholder="999">
+                </div>
+                <button type="submit" class="btn-solid">Filtra</button>
             </div>
-			<div class="field">
-			        <label class="form-label">Prezzo da</label>
-			        <input type="number" name="prezzoMin" class="form-control" 
-			               step="0.01" min="0" th:value="${prezzoMin}" placeholder="0">
-			    </div>
-			    <div class="field">
-			        <label class="form-label">Prezzo a</label>
-			        <input type="number" name="prezzoMax" class="form-control"
-			               step="0.01" min="0" th:value="${prezzoMax}" placeholder="999">
-			    </div>
-            <div class="field">
-                <label class="form-label">Ordina per</label>
-                <select name="ordina" class="form-select">
-                    <option value="" th:selected="${ordina == null || ordina == ''}">Rilevanza</option>
-                    <option value="nuovi" th:selected="${ordina == 'nuovi'}">Novità</option>
-                    <option value="prezzo-asc" th:selected="${ordina == 'prezzo-asc'}">Prezzo crescente</option>
-                    <option value="prezzo-desc" th:selected="${ordina == 'prezzo-desc'}">Prezzo decrescente</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-solid">Filtra</button>
         </form>
 
         <!-- Griglia prodotti -->
@@ -90,17 +112,17 @@
         <!-- Paginazione -->
         <nav class="pagination" th:if="${totalePagine != null && totalePagine > 1}">
             <a th:if="${paginaCorrente > 1}"
-               th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, page=${paginaCorrente - 1})}"
+               th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, taglia=${taglia}, colore=${colore}, page=${paginaCorrente - 1})}"
                class="pagination__link pagination__link--nav">&larr; Precedente</a>
 
             <a th:each="p : ${#numbers.sequence(1, totalePagine)}"
-               th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, page=${p})}"
+               th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, taglia=${taglia}, colore=${colore}, page=${p})}"
                th:text="${p}"
                th:classappend="${p == paginaCorrente} ? 'pagination__link--attivo'"
                class="pagination__link">1</a>
 
             <a th:if="${paginaCorrente < totalePagine}"
-               th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, page=${paginaCorrente + 1})}"
+               th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, taglia=${taglia}, colore=${colore}, page=${paginaCorrente + 1})}"
                class="pagination__link pagination__link--nav">Successiva &rarr;</a>
         </nav>
 

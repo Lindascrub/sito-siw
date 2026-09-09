@@ -756,20 +756,28 @@ footer .bottom {
 
 /* --- barra filtri catalogo --- */
 .filter-bar {
-  display: grid;
-  grid-template-columns: 1.6fr 1.1fr .7fr .7fr 1.1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
-  align-items: end;
   padding: 24px 0 34px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   margin-bottom: 44px;
 }
+.filter-bar__row {
+  display: grid;
+  gap: 14px;
+  align-items: end;
+}
+.filter-bar__row--top { grid-template-columns: 2fr 1.2fr 1.2fr; }
+.filter-bar__row--bottom { grid-template-columns: 1fr 1fr .8fr .8fr auto; }
 @media (max-width: 900px) {
-  .filter-bar { grid-template-columns: 1fr 1fr; }
+  .filter-bar__row--top,
+  .filter-bar__row--bottom { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 560px) {
-  .filter-bar { grid-template-columns: 1fr; }
+  .filter-bar__row--top,
+  .filter-bar__row--bottom { grid-template-columns: 1fr; }
 }
 
 /* --- paginazione catalogo --- */

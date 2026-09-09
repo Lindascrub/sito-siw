@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,6 +43,8 @@ public class ProdottoController {
                                @RequestParam(required = false) Double prezzoMin,
                                @RequestParam(required = false) Double prezzoMax,
                                @RequestParam(required = false) String ordina,
+                               @RequestParam(required = false) String taglia,
+                               @RequestParam(required = false) String colore,
                                @RequestParam(required = false) Integer page,
                                Model model) {
         List<Prodotto> prodotti;
@@ -66,6 +69,15 @@ public class ProdottoController {
         }
 
 
+        // Opzioni di taglia/colore disponibili per il risultato corrente (prima del filtro
+        // taglia/colore stesso, altrimenti selezionandone uno spariscono le altre opzioni)
+        TreeSet<String> taglieDisponibili = new TreeSet<>();
+        TreeSet<String> coloriDisponibili = new TreeSet<>();
+        for (Prodotto p : prodotti) {
+            taglieDisponibili.addAll(p.getTaglieDisponibili());
+            coloriDisponibili.addAll(p.getColoriDisponibili());
+        }
+
         if (prezzoMin != null || prezzoMax != null) {
             Double min = prezzoMin != null ? prezzoMin : 0.0;
             Double max = prezzoMax != null ? prezzoMax : Double.MAX_VALUE;
@@ -74,6 +86,19 @@ public class ProdottoController {
                 .collect(Collectors.toList());
         } else {
             filtrati = prodotti;
+        }
+
+        boolean haTaglia = taglia != null && !taglia.isEmpty();
+        boolean haColore = colore != null && !colore.isEmpty();
+        if (haTaglia) {
+            filtrati = filtrati.stream()
+                .filter(p -> p.getTaglieDisponibili().contains(taglia))
+                .collect(Collectors.toList());
+        }
+        if (haColore) {
+            filtrati = filtrati.stream()
+                .filter(p -> p.getColoriDisponibili().contains(colore))
+                .collect(Collectors.toList());
         }
 
         List<Prodotto> ordinati = new java.util.ArrayList<>(filtrati);
@@ -102,6 +127,10 @@ public class ProdottoController {
         model.addAttribute("prezzoMin", prezzoMin);
         model.addAttribute("prezzoMax", prezzoMax);
         model.addAttribute("ordina", ordina);
+        model.addAttribute("taglia", taglia);
+        model.addAttribute("colore", colore);
+        model.addAttribute("taglieDisponibili", taglieDisponibili);
+        model.addAttribute("coloriDisponibili", coloriDisponibili);
         model.addAttribute("paginaCorrente", paginaCorrente);
         model.addAttribute("totalePagine", totalePagine);
         model.addAttribute("totaleProdotti", totaleProdotti);
