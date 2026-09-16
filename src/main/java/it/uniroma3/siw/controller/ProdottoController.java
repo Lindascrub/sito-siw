@@ -5,12 +5,10 @@ import it.uniroma3.siw.model.Categoria;
 import it.uniroma3.siw.service.ProdottoService;
 import it.uniroma3.siw.service.CategoriaService;
 import it.uniroma3.siw.service.TagliaService;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
@@ -45,10 +43,10 @@ public class ProdottoController {
                                @RequestParam(required = false) String ordina,
                                @RequestParam(required = false) String taglia,
                                @RequestParam(required = false) String colore,
-                               @RequestParam(required = false) Integer page,
+                               @RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "20") int size,
                                Model model) {
         List<Prodotto> prodotti;
-        List<Prodotto> filtrati;
 
         boolean haSearch = search != null && !search.isEmpty();
         boolean haCategoria = categoria != null && !categoria.isEmpty();
@@ -68,9 +66,7 @@ public class ProdottoController {
             prodotti = prodottoService.findAllAttivi();
         }
 
-
-        // Opzioni di taglia/colore disponibili per il risultato corrente (prima del filtro
-        // taglia/colore stesso, altrimenti selezionandone uno spariscono le altre opzioni)
+        // Taglie/colori disponibili per il risultato corrente
         TreeSet<String> taglieDisponibili = new TreeSet<>();
         TreeSet<String> coloriDisponibili = new TreeSet<>();
         for (Prodotto p : prodotti) {
@@ -78,6 +74,8 @@ public class ProdottoController {
             coloriDisponibili.addAll(p.getColoriDisponibili());
         }
 
+        // Filtro prezzo
+        List<Prodotto> filtrati;
         if (prezzoMin != null || prezzoMax != null) {
             Double min = prezzoMin != null ? prezzoMin : 0.0;
             Double max = prezzoMax != null ? prezzoMax : Double.MAX_VALUE;
@@ -88,19 +86,20 @@ public class ProdottoController {
             filtrati = prodotti;
         }
 
-        boolean haTaglia = taglia != null && !taglia.isEmpty();
-        boolean haColore = colore != null && !colore.isEmpty();
-        if (haTaglia) {
+        // Filtro taglia
+        if (taglia != null && !taglia.isEmpty()) {
             filtrati = filtrati.stream()
                 .filter(p -> p.getTaglieDisponibili().contains(taglia))
                 .collect(Collectors.toList());
         }
-        if (haColore) {
+        // Filtro colore
+        if (colore != null && !colore.isEmpty()) {
             filtrati = filtrati.stream()
                 .filter(p -> p.getColoriDisponibili().contains(colore))
                 .collect(Collectors.toList());
         }
 
+        // Ordinamento
         List<Prodotto> ordinati = new java.util.ArrayList<>(filtrati);
         if ("prezzo-asc".equals(ordina)) {
             ordinati.sort(Comparator.comparing(Prodotto::getPrezzo));
@@ -109,18 +108,24 @@ public class ProdottoController {
         } else if ("nuovi".equals(ordina)) {
             ordinati.sort(Comparator.comparing(Prodotto::getId).reversed());
         }
-        // "rilevanza" (o nessun valore): mantiene l'ordine restituito dalla ricerca/filtro
 
-        int dimensionaPagina = 20;
+        // ============================================
+        // ✅ PAGINAZIONE
+        // ============================================
+        int dimensionePagina = size;
         int totaleProdotti = ordinati.size();
-        int totalePagine = (int) Math.ceil(totaleProdotti / (double) dimensionaPagina);
-        int paginaCorrente = (page == null || page < 1) ? 1 : page;
+        int totalePagine = (int) Math.ceil(totaleProdotti / (double) dimensionePagina);
+        int paginaCorrente = (page < 1) ? 1 : page;
         if (totalePagine > 0 && paginaCorrente > totalePagine) {
             paginaCorrente = totalePagine;
         }
-        int daIndice = Math.min((paginaCorrente - 1) * dimensionaPagina, totaleProdotti);
-        int aIndice = Math.min(daIndice + dimensionaPagina, totaleProdotti);
+        int daIndice = Math.min((paginaCorrente - 1) * dimensionePagina, totaleProdotti);
+        int aIndice = Math.min(daIndice + dimensionePagina, totaleProdotti);
         List<Prodotto> prodottiPagina = ordinati.subList(daIndice, aIndice);
+
+        // Calcolo "Mostrati X-Y di Z"
+        int daMostrato = totaleProdotti == 0 ? 0 : daIndice + 1;
+        int aMostrato = aIndice;
 
         model.addAttribute("prodotti", prodottiPagina);
         model.addAttribute("categorie", categoriaService.findAll());
@@ -134,11 +139,12 @@ public class ProdottoController {
         model.addAttribute("paginaCorrente", paginaCorrente);
         model.addAttribute("totalePagine", totalePagine);
         model.addAttribute("totaleProdotti", totaleProdotti);
+        model.addAttribute("daMostrato", daMostrato);
+        model.addAttribute("aMostrato", aMostrato);
+        model.addAttribute("dimensionePagina", dimensionePagina);
 
         return "prodotti/list";
     }
-    
-
     
     @GetMapping("/{id}")
     public String showProdotto(@PathVariable Long id, Model model) {
@@ -146,6 +152,4 @@ public class ProdottoController {
         model.addAttribute("prodotto", prodotto);
         return "prodotti/show";
     }
-
-
 }

@@ -2,8 +2,11 @@ package it.uniroma3.siw.service;
 
 import java.util.List;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,9 +88,6 @@ public class ProdottoService {
     public void eliminaProdotto(Long id) {
         Prodotto prodotto = findById(id);
 
-        // Le righe ordine già effettuate mantengono il nome salvato al momento
-        // dell'acquisto (nomeProdotto): scolleghiamo solo il riferimento al
-        // prodotto vivo, così lo storico resta leggibile anche dopo l'eliminazione.
         List<RigaOrdine> righeOrdine = rigaOrdineRepository.findByProdottoId(id);
         for (RigaOrdine riga : righeOrdine) {
             if (riga.getNomeProdotto() == null) {
@@ -99,13 +99,12 @@ public class ProdottoService {
             rigaOrdineRepository.saveAll(righeOrdine);
         }
 
-        // Ripulisce i riferimenti nei carrelli e nei preferiti
+     
         List<RigaCarrello> righe = rigaCarrelloRepository.findByProdottoId(id);
         if (!righe.isEmpty()) {
             rigaCarrelloRepository.deleteAll(righe);
         }
 
-        // Le recensioni non hanno senso senza il prodotto a cui si riferiscono
         List<Recensione> recensioni = recensioneRepository.findByProdottoId(id);
         if (!recensioni.isEmpty()) {
             recensioneRepository.deleteAll(recensioni);
@@ -271,5 +270,11 @@ public class ProdottoService {
         prodotto.setAttivo(true);
         prodottoRepository.save(prodotto);
         logger.info("Prodotto riattivato: {}", prodotto.getNome());
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<Prodotto> trovaTuttiPaginati(Pageable pageable) {
+        logger.debug("Recupero prodotti paginati: pagina {}", pageable.getPageNumber());
+        return prodottoRepository.findByAttivoTrue(pageable);
     }
 }

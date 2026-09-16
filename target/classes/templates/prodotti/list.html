@@ -125,7 +125,16 @@
                th:href="@{/prodotti(categoria=${categoriaSelezionata}, search=${searchTerm}, prezzoMin=${prezzoMin}, prezzoMax=${prezzoMax}, ordina=${ordina}, taglia=${taglia}, colore=${colore}, page=${paginaCorrente + 1})}"
                class="pagination__link pagination__link--nav">Successiva &rarr;</a>
         </nav>
-
+		<div class="product-counter" th:if="${totaleProdotti > 0}">
+		    <span th:text="'Mostrati ' + ${daMostrato} + '-' + ${aMostrato} + ' di ' + ${totaleProdotti} + ' prodotti'">
+		        Mostrati 1-20 di 71 prodotti
+		    </span>
+		    <span th:if="${totalePagine > 1}" 
+		          th:text="'(Pagina ' + ${paginaCorrente} + ' di ' + ${totalePagine} + ')'">
+		        (Pagina 1 di 4)
+		    </span>
+		</div>
+		
     </main>
 
     <footer th:replace="~{fragments/base :: footer}"></footer>
